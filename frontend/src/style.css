@@ -27,8 +27,10 @@
   html {
     @apply antialiased;
     font-family: var(--font-sans);
+    overflow-x: hidden;
   }
   body {
     @apply bg-background text-navy;
+    overflow-x: hidden;
   }
 }
