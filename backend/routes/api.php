@@ -28,3 +28,4 @@ Route::middleware('auth:sanctum')->group(function () {
         return $tagihan;
     });
 });
+Route::middleware('auth:sanctum')->get('/dashboard/overview', [\App\Http\Controllers\DashboardController::class, 'getOverview']);
