@@ -1,0 +1,190 @@
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { 
+  LogOut, 
+  X, 
+  Building2, 
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
+  Home,
+  Users,
+  FileText,
+  CreditCard,
+  Wallet,
+  Settings,
+  PieChart,
+  Bell,
+  User
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface SidebarProps {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  isCollapsed: boolean;
+  setIsCollapsed: (isCollapsed: boolean) => void;
+  brandName?: string;
+  userRole: string;
+}
+
+export function Sidebar({ 
+  isOpen, 
+  setIsOpen, 
+  isCollapsed, 
+  setIsCollapsed,
+  brandName = 'KOSTKU',
+  userRole
+}: SidebarProps) {
+  const location = useLocation();
+  const { logout } = useAuth();
+
+  const getRoleBasedItems = () => {
+    switch (userRole) {
+      case 'Owner':
+        return [
+          { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+          { name: 'Kost', path: '/kost', icon: Building2 }, // Assuming /kost exists or will be added
+          { name: 'Kamar', path: '/kamar', icon: Home },
+          { name: 'Penghuni', path: '/penghuni', icon: Users },
+          { name: 'Kontrak', path: '/kontrak', icon: FileText },
+          { name: 'Tagihan', path: '/tagihan', icon: CreditCard },
+          { name: 'Pembayaran', path: '/pembayaran', icon: Wallet },
+          { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
+          { name: 'Laporan', path: '/laporan', icon: FileText },
+          { name: 'Pengguna', path: '/pengguna', icon: Users },
+          { name: 'Notifikasi', path: '/notifikasi', icon: Bell },
+          { name: 'Profil', path: '/profil', icon: User },
+          { name: 'Pengaturan', path: '/pengaturan', icon: Settings },
+        ];
+      case 'Admin':
+        return [
+          { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+          { name: 'Kamar', path: '/kamar', icon: Home },
+          { name: 'Penghuni', path: '/penghuni', icon: Users },
+          { name: 'Kontrak', path: '/kontrak', icon: FileText },
+          { name: 'Tagihan', path: '/tagihan', icon: CreditCard },
+          { name: 'Pembayaran', path: '/pembayaran', icon: Wallet },
+          { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
+          { name: 'Laporan', path: '/laporan', icon: FileText },
+          { name: 'Notifikasi', path: '/notifikasi', icon: Bell },
+          { name: 'Profil', path: '/profil', icon: User },
+        ];
+      case 'Penghuni':
+      default:
+        return [
+          { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+          { name: 'Tagihan', path: '/my-bills', icon: CreditCard },
+          { name: 'Pembayaran', path: '/my-payments', icon: Wallet },
+          { name: 'Kontrak', path: '/my-contract', icon: FileText },
+          { name: 'Notifikasi', path: '/my-notifications', icon: Bell },
+          { name: 'Profil', path: '/my-profile', icon: User },
+        ];
+    }
+  };
+
+  const navItems = getRoleBasedItems();
+
+  return (
+    <>
+      {/* Mobile Drawer Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden animate-in fade-in duration-200"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 transform bg-navy border-r border-slate-800 transition-all duration-300 ease-in-out lg:static lg:translate-x-0 shadow-2xl lg:shadow-none flex flex-col h-full",
+          isOpen ? "translate-x-0 w-72" : "-translate-x-full lg:translate-x-0",
+          isCollapsed && !isOpen ? "lg:w-20" : "w-72"
+        )}
+      >
+        <div className="flex h-20 shrink-0 items-center justify-between px-4 border-b border-slate-800/60 bg-navy">
+          <Link to="/" className="flex items-center justify-center space-x-3 w-full" onClick={() => setIsOpen(false)}>
+            <div className="w-10 h-10 shrink-0 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+              <Building2 className="w-6 h-6 text-white" />
+            </div>
+            {(!isCollapsed || isOpen) && (
+              <span className="text-2xl font-extrabold text-white tracking-tight animate-in fade-in flex-1 truncate">
+                {brandName}
+              </span>
+            )}
+          </Link>
+          <button
+            className="lg:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors shrink-0"
+            onClick={() => setIsOpen(false)}
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-3 custom-scrollbar">
+          <div className="space-y-1">
+            {navItems.map((item) => {
+              const isActive = location.pathname.startsWith(item.path);
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  title={isCollapsed && !isOpen ? item.name : undefined}
+                  onClick={() => setIsOpen(false)}
+                  className={cn(
+                    "flex items-center rounded-xl text-sm font-bold transition-all duration-200 group relative",
+                    isCollapsed && !isOpen ? "justify-center px-0 py-3" : "px-4 py-3.5",
+                    isActive
+                      ? "bg-primary text-white shadow-md shadow-primary/20"
+                      : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                  )}
+                >
+                  <item.icon
+                    className={cn(
+                      "h-5 w-5 shrink-0 transition-colors",
+                      isActive ? "text-white" : "text-slate-500 group-hover:text-slate-300",
+                      (!isCollapsed || isOpen) && "mr-4"
+                    )}
+                  />
+                  {(!isCollapsed || isOpen) && (
+                    <span className="truncate">{item.name}</span>
+                  )}
+                  {isActive && isCollapsed && !isOpen && (
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-white rounded-l-full" />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+
+        <div className="p-3 border-t border-slate-800/60 bg-navy shrink-0 flex flex-col space-y-2">
+          {/* Collapse Toggle for Desktop */}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="hidden lg:flex w-full items-center justify-center p-2 text-slate-500 hover:bg-slate-800 hover:text-white rounded-xl transition-colors"
+          >
+            {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+          </button>
+
+          <button
+            onClick={logout}
+            title={isCollapsed && !isOpen ? 'Keluar' : undefined}
+            className={cn(
+              "flex w-full items-center text-sm font-bold text-slate-400 rounded-xl hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group",
+              isCollapsed && !isOpen ? "justify-center px-0 py-3" : "px-4 py-3.5"
+            )}
+          >
+            <LogOut className={cn(
+              "h-5 w-5 shrink-0 transition-colors",
+              isCollapsed && !isOpen ? "" : "mr-4 group-hover:text-red-400"
+            )} />
+            {(!isCollapsed || isOpen) && <span>Keluar Aplikasi</span>}
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+}

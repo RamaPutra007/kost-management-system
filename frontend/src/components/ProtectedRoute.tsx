@@ -3,13 +3,13 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Spinner } from '@/components/ui/Spinner';
 
-export function ProtectedRoute({ allowedRoles }: { allowedRoles?: string[] }) {
+export function ProtectedRoute({ allowedRoles, children }: { allowedRoles?: string[], children?: React.ReactNode }) {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-gray-50">
-        <Spinner className="h-8 w-8" />
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Spinner className="h-10 w-10 text-primary" />
       </div>
     );
   }
@@ -22,5 +22,5 @@ export function ProtectedRoute({ allowedRoles }: { allowedRoles?: string[] }) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  return <Outlet />;
+  return children ? <>{children}</> : <Outlet />;
 }
