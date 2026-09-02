@@ -1,28 +1,28 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { AppLayout } from './layouts/AppLayout';
-import { ProtectedRoute } from './components/ProtectedRoute';
-import { Login } from './pages/auth/Login';
-import { Landing } from './pages/Landing';
+import { AppLayout } from '@/layouts/AppLayout';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { Login } from '@/pages/auth/Login';
+import { Landing } from '@/pages/Landing';
 
-import { ForgotPassword } from './pages/auth/ForgotPassword';
-import { ResetPassword } from './pages/auth/ResetPassword';
+import { ForgotPassword } from '@/pages/auth/ForgotPassword';
+import { ResetPassword } from '@/pages/auth/ResetPassword';
 
 // Owner & Admin Pages
-import { KamarList } from './pages/admin/Kamar/KamarList';
-import { PenghuniList } from './pages/admin/Penghuni/PenghuniList';
-import { KontrakList } from './pages/admin/Kontrak/KontrakList';
-import { TagihanList } from './pages/admin/Tagihan/TagihanList';
-import { PembayaranList } from './pages/admin/Pembayaran/PembayaranList';
-import { PengeluaranList } from './pages/admin/Pengeluaran/PengeluaranList';
+import { KamarList } from '@/pages/admin/Kamar/KamarList';
+import { PenghuniList } from '@/pages/admin/Penghuni/PenghuniList';
+import { KontrakList } from '@/pages/admin/Kontrak/KontrakList';
+import { TagihanList } from '@/pages/admin/Tagihan/TagihanList';
+import { PembayaranList } from '@/pages/admin/Pembayaran/PembayaranList';
+import { PengeluaranList } from '@/pages/admin/Pengeluaran/PengeluaranList';
 
 // Penghuni Pages
-import { MyDashboard } from './pages/penghuni/MyDashboard';
-import { MyRoom } from './pages/penghuni/MyRoom';
-import { MyBills } from './pages/penghuni/MyBills';
-import { MyPayments } from './pages/penghuni/MyPayments';
+import { MyDashboard } from '@/pages/penghuni/MyDashboard';
+import { MyRoom } from '@/pages/penghuni/MyRoom';
+import { MyBills } from '@/pages/penghuni/MyBills';
+import { MyPayments } from '@/pages/penghuni/MyPayments';
 
 // Unified Dashboard Entry
-import { DashboardEntry } from './pages/DashboardEntry';
+import { DashboardEntry } from '@/pages/DashboardEntry';
 
 export const router = createBrowserRouter([
   {
