@@ -14,11 +14,12 @@ import { MyDashboard } from './pages/penghuni/MyDashboard';
 import { MyRoom } from './pages/penghuni/MyRoom';
 import { MyBills } from './pages/penghuni/MyBills';
 import { MyPayments } from './pages/penghuni/MyPayments';
+import { Landing } from './pages/Landing';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/login" replace />,
+    element: <Landing />,
   },
   {
     path: '/login',
