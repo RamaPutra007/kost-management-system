@@ -1,32 +1,19 @@
 <?php
-
 namespace App\Models;
-
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
-{
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+class User extends Authenticatable {
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    protected $guarded = [];
+    protected $hidden = ['password', 'remember_token'];
+    protected function casts(): array { return ['email_verified_at' => 'datetime', 'password' => 'hashed']; }
+    public function role() { return $this->belongsTo(Role::class); }
+    public function penghuni() { return $this->hasOne(Penghuni::class); }
+    public function notifications() { return $this->hasMany(Notification::class); }
+    public function pembayaranDiverifikasi() { return $this->hasMany(Pembayaran::class, 'diverifikasi_oleh'); }
+    public function pengeluaranDicatat() { return $this->hasMany(Pengeluaran::class, 'dicatat_oleh'); }
 }

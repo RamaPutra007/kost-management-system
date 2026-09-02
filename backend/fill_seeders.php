@@ -1,4 +1,13 @@
 <?php
+$base = __DIR__;
+
+function updateFile($file, $content) {
+    file_put_contents($file, $content);
+    echo "Updated $file\n";
+}
+
+$dbSeederCode = <<<'PHP'
+<?php
 namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Role;
@@ -71,3 +80,7 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 }
+PHP;
+
+updateFile($base . '/database/seeders/DatabaseSeeder.php', $dbSeederCode);
+echo "Seeders updated.\n";
