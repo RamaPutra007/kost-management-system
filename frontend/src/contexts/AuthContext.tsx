@@ -27,13 +27,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('token');
-      if (token) {
+      // prevent "undefined" string literal bug
+      if (token && token !== 'undefined') {
         try {
           const res = await api.get('/user');
           setUser(res.data);
-        } catch (error) {
-          localStorage.removeItem('token');
+        } catch (error: any) {
+          if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+          }
         }
+      } else {
+          localStorage.removeItem('token');
       }
       setIsLoading(false);
     };
