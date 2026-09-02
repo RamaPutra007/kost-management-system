@@ -21,7 +21,9 @@ class DashboardController extends Controller
         $kamarTerisi = Kamar::where('status', 'Terisi')->count();
         $kamarKosong = Kamar::where('status', 'Kosong')->count();
 
-        $totalPenghuni = Penghuni::where('status_aktif', true)->count();
+        $totalPenghuni = Penghuni::whereHas('kontrakSewas', function ($query) {
+            $query->where('status', 'Aktif');
+        })->count();
 
         $bulanIni = Carbon::now()->month;
         $tahunIni = Carbon::now()->year;

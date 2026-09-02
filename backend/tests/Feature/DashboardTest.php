@@ -15,8 +15,8 @@ class DashboardTest extends TestCase
     {
         parent::setUp();
         $this->seed(DatabaseSeeder::class);
-        $this->admin = User::where('email', 'admin@test.com')->first();
-        $this->penghuni = User::where('email', 'john@test.com')->first();
+        $this->admin = User::where('email', 'admin@gmail.com')->first();
+        $this->penghuni = User::where('email', 'penghuni@gmail.com')->first();
     }
 
     public function test_admin_can_access_dashboard()
