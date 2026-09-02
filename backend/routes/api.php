@@ -10,6 +10,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('kamar', \App\Http\Controllers\KamarController::class);
     Route::apiResource('penghuni', \App\Http\Controllers\PenghuniController::class);
     Route::apiResource('kontrak_sewa', \App\Http\Controllers\KontrakSewaController::class);
+    Route::apiResource('tagihan', \App\Http\Controllers\TagihanController::class);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
