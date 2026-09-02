@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "antigravity-workflows": {
+      "source": "sickn33/agentic-awesome-skills",
+      "sourceType": "github",
+      "skillPath": "skills/antigravity-workflows/SKILL.md",
+      "computedHash": "bfbda0457686fb49fcf519ba2351419ed8651dcca5e828f87ac9d15a9e336f10"
+    }
+  }
+}

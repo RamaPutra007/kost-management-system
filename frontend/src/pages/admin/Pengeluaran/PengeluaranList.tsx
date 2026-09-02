@@ -7,9 +7,10 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
 import { toast } from 'react-hot-toast';
 
-export function PenghuniList() {
+export function PengeluaranList() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -17,19 +18,33 @@ export function PenghuniList() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    nik: '',
-    telepon: '',
-    kontak_darurat: '',
+    kost_id: '',
+    kategori_id: '',
+    tanggal: '',
+    nominal: '',
+    keterangan: '',
   });
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['penghuni'],
+    queryKey: ['pengeluaran'],
     queryFn: async () => {
-      const res = await api.get('/penghuni');
-      // The API returns paginated response based on controller `Penghuni::with('user')->paginate(15)`
+      const res = await api.get('/pengeluaran');
+      return res.data.data || res.data;
+    }
+  });
+
+  const { data: kosts } = useQuery({
+    queryKey: ['kost'],
+    queryFn: async () => {
+      const res = await api.get('/kost');
+      return res.data.data || res.data;
+    }
+  });
+
+  const { data: kategori } = useQuery({
+    queryKey: ['kategori_pengeluaran'],
+    queryFn: async () => {
+      const res = await api.get('/kategori_pengeluaran');
       return res.data.data || res.data;
     }
   });
@@ -37,14 +52,14 @@ export function PenghuniList() {
   const mutation = useMutation({
     mutationFn: async (data: any) => {
       if (editingId) {
-        return await api.put(`/penghuni/${editingId}`, data);
+        return await api.put(`/pengeluaran/${editingId}`, data);
       } else {
-        return await api.post('/penghuni', data);
+        return await api.post('/pengeluaran', data);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['penghuni'] });
-      toast.success(editingId ? 'Penghuni berhasil diubah' : 'Penghuni berhasil ditambahkan');
+      queryClient.invalidateQueries({ queryKey: ['pengeluaran'] });
+      toast.success(editingId ? 'Pengeluaran berhasil diubah' : 'Pengeluaran berhasil ditambahkan');
       setIsModalOpen(false);
       resetForm();
     },
@@ -55,11 +70,11 @@ export function PenghuniList() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      return await api.delete(`/penghuni/${id}`);
+      return await api.delete(`/pengeluaran/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['penghuni'] });
-      toast.success('Penghuni berhasil dihapus');
+      queryClient.invalidateQueries({ queryKey: ['pengeluaran'] });
+      toast.success('Pengeluaran berhasil dihapus');
       setIsDeleteModalOpen(false);
       setSelectedItem(null);
     },
@@ -73,33 +88,31 @@ export function PenghuniList() {
     mutation.mutate(formData);
   };
 
-  const handleEdit = (penghuni: any) => {
-    setEditingId(penghuni.id);
+  const handleEdit = (pengeluaran: any) => {
+    setEditingId(pengeluaran.id);
     setFormData({
-      name: penghuni.user?.name || '',
-      email: penghuni.user?.email || '',
-      password: '', // blank password on edit
-      nik: penghuni.nik || '',
-      telepon: penghuni.telepon || '',
-      kontak_darurat: penghuni.kontak_darurat || '',
+      kost_id: pengeluaran.kost_id,
+      kategori_id: pengeluaran.kategori_id,
+      tanggal: pengeluaran.tanggal,
+      nominal: pengeluaran.nominal,
+      keterangan: pengeluaran.keterangan || '',
     });
     setIsModalOpen(true);
   };
 
-  const handleDeleteClick = (penghuni: any) => {
-    setSelectedItem(penghuni);
+  const handleDeleteClick = (pengeluaran: any) => {
+    setSelectedItem(pengeluaran);
     setIsDeleteModalOpen(true);
   };
 
   const resetForm = () => {
     setEditingId(null);
     setFormData({
-      name: '',
-      email: '',
-      password: '',
-      nik: '',
-      telepon: '',
-      kontak_darurat: '',
+      kost_id: kosts?.[0]?.id || '',
+      kategori_id: kategori?.[0]?.id || '',
+      tanggal: '',
+      nominal: '',
+      keterangan: '',
     });
   };
 
@@ -115,10 +128,10 @@ export function PenghuniList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Manajemen Penghuni</h2>
-          <p className="text-gray-500">Kelola data penghuni kost beserta akses login mereka.</p>
+          <h2 className="text-2xl font-bold tracking-tight">Manajemen Pengeluaran</h2>
+          <p className="text-gray-500">Pencatatan pengeluaran operasional kost.</p>
         </div>
-        <Button onClick={openAddModal}>Tambah Penghuni</Button>
+        <Button onClick={openAddModal}>Tambah Pengeluaran</Button>
       </div>
 
       <Card>
@@ -126,27 +139,29 @@ export function PenghuniList() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nama</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>No. Telepon</TableHead>
-                <TableHead>NIK</TableHead>
+                <TableHead>Tanggal</TableHead>
+                <TableHead>Kategori</TableHead>
+                <TableHead>Keterangan</TableHead>
+                <TableHead>Nominal</TableHead>
+                <TableHead>Dicatat Oleh</TableHead>
                 <TableHead className="text-right">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data?.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                    Belum ada data penghuni.
+                  <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                    Belum ada data pengeluaran.
                   </TableCell>
                 </TableRow>
               ) : (
                 data?.map((item: any) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.user?.name || '-'}</TableCell>
-                    <TableCell>{item.user?.email || '-'}</TableCell>
-                    <TableCell>{item.telepon}</TableCell>
-                    <TableCell>{item.nik}</TableCell>
+                    <TableCell className="font-medium">{item.tanggal}</TableCell>
+                    <TableCell>{item.kategori?.nama}</TableCell>
+                    <TableCell>{item.keterangan || '-'}</TableCell>
+                    <TableCell>Rp {Number(item.nominal).toLocaleString()}</TableCell>
+                    <TableCell>{item.pencatat?.name}</TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>Edit</Button>
                       <Button variant="danger" size="sm" onClick={() => handleDeleteClick(item)}>Hapus</Button>
@@ -162,63 +177,60 @@ export function PenghuniList() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingId ? 'Edit Penghuni' : 'Tambah Penghuni'}
+        title={editingId ? 'Edit Pengeluaran' : 'Tambah Pengeluaran'}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Nama Lengkap</label>
+            <label className="text-sm font-medium">Kost</label>
+            <Select
+              value={formData.kost_id}
+              onChange={(e) => setFormData({ ...formData, kost_id: e.target.value })}
+              required
+            >
+              <option value="">Pilih Kost...</option>
+              {kosts?.map((k: any) => (
+                <option key={k.id} value={k.id}>{k.nama}</option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Kategori</label>
+            <Select
+              value={formData.kategori_id}
+              onChange={(e) => setFormData({ ...formData, kategori_id: e.target.value })}
+              required
+            >
+              <option value="">Pilih Kategori...</option>
+              {kategori?.map((k: any) => (
+                <option key={k.id} value={k.id}>{k.nama}</option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Tanggal</label>
             <Input
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              type="date"
+              value={formData.tanggal}
+              onChange={(e) => setFormData({ ...formData, tanggal: e.target.value })}
               required
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Email (Untuk Login)</label>
+            <label className="text-sm font-medium">Nominal (Rp)</label>
             <Input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              type="number"
+              value={formData.nominal}
+              onChange={(e) => setFormData({ ...formData, nominal: e.target.value })}
               required
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium">Password {editingId && '(Kosongkan jika tidak diubah)'}</label>
+            <label className="text-sm font-medium">Keterangan</label>
             <Input
-              type="password"
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              required={!editingId}
-              minLength={6}
+              value={formData.keterangan}
+              onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">NIK (KTP)</label>
-            <Input
-              value={formData.nik}
-              onChange={(e) => setFormData({ ...formData, nik: e.target.value })}
-              required
-              maxLength={16}
-              minLength={16}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">No. Telepon</label>
-            <Input
-              value={formData.telepon}
-              onChange={(e) => setFormData({ ...formData, telepon: e.target.value })}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Kontak Darurat</label>
-            <Input
-              value={formData.kontak_darurat}
-              onChange={(e) => setFormData({ ...formData, kontak_darurat: e.target.value })}
-              required
-            />
-          </div>
-          
           <div className="pt-4 flex justify-end space-x-2">
             <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Batal</Button>
             <Button type="submit" isLoading={mutation.isPending}>Simpan</Button>
@@ -233,8 +245,7 @@ export function PenghuniList() {
       >
         <div className="space-y-4">
           <p className="text-gray-600">
-            Apakah Anda yakin ingin menghapus penghuni <strong>{selectedItem?.user?.name}</strong>?
-            Tindakan ini juga akan menghapus akun login mereka dan tidak dapat dibatalkan.
+            Apakah Anda yakin ingin menghapus data pengeluaran ini? Tindakan ini tidak dapat dibatalkan.
           </p>
           <div className="flex justify-end space-x-2">
             <Button variant="ghost" onClick={() => setIsDeleteModalOpen(false)}>Batal</Button>

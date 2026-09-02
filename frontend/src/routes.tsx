@@ -6,7 +6,14 @@ import { Login } from './pages/auth/Login';
 import { Dashboard } from './pages/admin/Dashboard';
 import { KamarList } from './pages/admin/Kamar/KamarList';
 import { PenghuniList } from './pages/admin/Penghuni/PenghuniList';
+import { KontrakList } from './pages/admin/Kontrak/KontrakList';
+import { TagihanList } from './pages/admin/Tagihan/TagihanList';
+import { PembayaranList } from './pages/admin/Pembayaran/PembayaranList';
+import { PengeluaranList } from './pages/admin/Pengeluaran/PengeluaranList';
 import { MyDashboard } from './pages/penghuni/MyDashboard';
+import { MyRoom } from './pages/penghuni/MyRoom';
+import { MyBills } from './pages/penghuni/MyBills';
+import { MyPayments } from './pages/penghuni/MyPayments';
 
 export const router = createBrowserRouter([
   {
@@ -26,10 +33,10 @@ export const router = createBrowserRouter([
           { path: '/dashboard', element: <Dashboard /> },
           { path: '/kamar', element: <KamarList /> },
           { path: '/penghuni', element: <PenghuniList /> },
-          { path: '/kontrak', element: <div>Kontrak Sewa (WIP)</div> },
-          { path: '/tagihan', element: <div>Tagihan (WIP)</div> },
-          { path: '/pembayaran', element: <div>Pembayaran (WIP)</div> },
-          { path: '/pengeluaran', element: <div>Pengeluaran (WIP)</div> },
+          { path: '/kontrak', element: <KontrakList /> },
+          { path: '/tagihan', element: <TagihanList /> },
+          { path: '/pembayaran', element: <PembayaranList /> },
+          { path: '/pengeluaran', element: <PengeluaranList /> },
           { path: '/pengguna', element: <div>Pengguna (WIP)</div> },
           { path: '/pengaturan', element: <div>Pengaturan (WIP)</div> },
         ],
@@ -43,10 +50,10 @@ export const router = createBrowserRouter([
         element: <PenghuniLayout />,
         children: [
           { path: '/my-dashboard', element: <MyDashboard /> },
-          { path: '/my-room', element: <div>My Room (WIP)</div> },
-          { path: '/my-contract', element: <div>My Contract (WIP)</div> },
-          { path: '/my-bills', element: <div>My Bills (WIP)</div> },
-          { path: '/my-payments', element: <div>My Payments (WIP)</div> },
+          { path: '/my-room', element: <MyRoom /> },
+          { path: '/my-contract', element: <Navigate to="/my-room" replace /> },
+          { path: '/my-bills', element: <MyBills /> },
+          { path: '/my-payments', element: <MyPayments /> },
           { path: '/my-profile', element: <div>My Profile (WIP)</div> },
         ],
       },
