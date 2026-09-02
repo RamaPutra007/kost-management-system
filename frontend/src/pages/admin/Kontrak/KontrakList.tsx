@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
+import { Pagination } from '@/components/ui/Pagination';
 import { toast } from 'react-hot-toast';
+import { Search, Filter, Plus, Calendar, Edit2, AlertCircle } from 'lucide-react';
 
 export function KontrakList() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+
+  // Search, Filter, and Pagination state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('Semua');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const [formData, setFormData] = useState({
     kamar_id: '',
@@ -53,18 +61,18 @@ export function KontrakList() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
-      return await api.post('/kontrak_sewa', data);
+    mutationFn: async (submitData: any) => {
+      return await api.post('/kontrak_sewa', submitData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kontrak_sewa'] });
       queryClient.invalidateQueries({ queryKey: ['kamar'] });
-      toast.success('Kontrak berhasil dibuat');
+      toast.success('Kontrak baru berhasil dibuat');
       setIsModalOpen(false);
       resetForm();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Terjadi kesalahan');
+      toast.error(err.response?.data?.message || 'Gagal membuat kontrak');
     }
   });
 
@@ -75,7 +83,7 @@ export function KontrakList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kontrak_sewa'] });
       queryClient.invalidateQueries({ queryKey: ['kamar'] });
-      toast.success('Status kontrak berhasil diubah');
+      toast.success('Status kontrak berhasil diperbarui');
       setIsStatusModalOpen(false);
       setSelectedItem(null);
     },
@@ -118,61 +126,141 @@ export function KontrakList() {
     setIsModalOpen(true);
   };
 
-  if (isLoading) return <div className="flex justify-center p-8"><Spinner /></div>;
-  if (error) return <div className="p-4 text-red-500">Error loading data.</div>;
+  // Client-side filtering and pagination
+  const filteredData = useMemo(() => {
+    if (!data || !Array.isArray(data)) return [];
+    
+    return data.filter((item: any) => {
+      const kamarNo = item.kamar?.nomor_kamar || '';
+      const penghuniName = item.penghuni?.user?.name || '';
+      const query = searchQuery.toLowerCase();
+      
+      const matchSearch = kamarNo.toLowerCase().includes(query) || penghuniName.toLowerCase().includes(query);
+      const matchStatus = statusFilter === 'Semua' || item.status === statusFilter;
+      
+      return matchSearch && matchStatus;
+    });
+  }, [data, searchQuery, statusFilter]);
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  if (isLoading) return <div className="flex justify-center p-12"><Spinner className="w-10 h-10 text-primary" /></div>;
+  if (error) return <div className="p-4 text-red-500 font-bold text-center">Gagal memuat data kontrak.</div>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Kontrak Sewa</h2>
-          <p className="text-gray-500">Kelola penyewaan kamar oleh penghuni.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-navy">Kontrak Sewa</h2>
+          <p className="text-slate-500 text-sm mt-1">Kelola data penyewaan kamar, periode, dan harga kesepakatan.</p>
         </div>
-        <Button onClick={openAddModal}>Buat Kontrak Baru</Button>
+        <Button onClick={openAddModal} className="w-full sm:w-auto shadow-sm">
+          <Plus className="w-4 h-4 mr-2" /> Buat Kontrak Baru
+        </Button>
       </div>
 
-      <Card>
+      <Card className="border-slate-100 shadow-sm overflow-hidden">
+        <CardHeader className="bg-slate-50/50 border-b border-slate-100 p-4">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="w-full sm:max-w-xs relative">
+              <Input
+                placeholder="Cari kamar atau penghuni..."
+                leftIcon={<Search className="w-4 h-4 text-slate-400" />}
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1); // Reset page on search
+                }}
+                className="bg-white"
+              />
+            </div>
+            <div className="w-full sm:w-auto flex items-center gap-2">
+              <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+              <Select 
+                value={statusFilter} 
+                onChange={(e) => {
+                  setStatusFilter(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="bg-white min-w-[140px]"
+              >
+                <option value="Semua">Semua Status</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Selesai">Selesai</option>
+                <option value="Batal">Batal</option>
+              </Select>
+            </div>
+          </div>
+        </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Kamar</TableHead>
-                <TableHead>Penghuni</TableHead>
-                <TableHead>Periode</TableHead>
-                <TableHead>Harga</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Aksi</TableHead>
+              <TableRow className="bg-slate-50/50">
+                <TableHead className="font-bold text-navy">Kamar</TableHead>
+                <TableHead className="font-bold text-navy">Penghuni</TableHead>
+                <TableHead className="font-bold text-navy">Periode Sewa</TableHead>
+                <TableHead className="font-bold text-navy">Nilai Kontrak</TableHead>
+                <TableHead className="font-bold text-navy">Status</TableHead>
+                <TableHead className="text-right font-bold text-navy">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data?.length === 0 ? (
+              {paginatedData.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-gray-500 py-8">
-                    Belum ada data kontrak.
+                  <TableCell colSpan={6} className="text-center py-12">
+                    <div className="flex flex-col items-center justify-center text-slate-400">
+                      <Search className="w-8 h-8 mb-3 opacity-20" />
+                      <p className="font-medium text-slate-500">Tidak ada kontrak ditemukan.</p>
+                      <p className="text-xs">Coba sesuaikan kata kunci pencarian Anda.</p>
+                    </div>
                   </TableCell>
                 </TableRow>
               ) : (
-                data?.map((item: any) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.kamar?.nomor_kamar}</TableCell>
-                    <TableCell>{item.penghuni?.user?.name}</TableCell>
-                    <TableCell>
-                      {item.tanggal_mulai} s/d {item.tanggal_selesai}
+                paginatedData.map((item: any) => (
+                  <TableRow key={item.id} className="hover:bg-slate-50/80 transition-colors">
+                    <TableCell className="font-bold text-navy">
+                      Kamar {item.kamar?.nomor_kamar}
                     </TableCell>
-                    <TableCell>Rp {Number(item.harga_kesepakatan).toLocaleString()}</TableCell>
+                    <TableCell>
+                      <span className="font-medium text-slate-700">{item.penghuni?.user?.name || '-'}</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center text-sm text-slate-600">
+                        <Calendar className="w-3.5 h-3.5 mr-2 text-slate-400" />
+                        {new Date(item.tanggal_mulai).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        <span className="mx-1 text-slate-300">-</span>
+                        {new Date(item.tanggal_selesai).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-semibold text-slate-700">
+                      Rp {Number(item.harga_kesepakatan).toLocaleString('id-ID')}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={item.status === 'Aktif' ? 'success' : item.status === 'Selesai' ? 'default' : 'danger'}>
                         {item.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => openStatusModal(item)}>Ubah Status</Button>
+                    <TableCell className="text-right">
+                      <Button variant="outline" size="sm" onClick={() => openStatusModal(item)} className="text-xs font-semibold hover:bg-slate-100">
+                        Ubah Status
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
               )}
             </TableBody>
           </Table>
+          
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-slate-100 flex justify-center">
+              <Pagination 
+                currentPage={currentPage} 
+                totalPages={totalPages} 
+                onPageChange={setCurrentPage} 
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -182,36 +270,38 @@ export function KontrakList() {
         onClose={() => setIsModalOpen(false)}
         title="Buat Kontrak Sewa Baru"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Kamar (Hanya yang kosong)</label>
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          <div className="space-y-1.5">
+            <label className="text-sm font-bold text-navy flex items-center">
+              Kamar <span className="text-xs font-normal text-slate-400 ml-2">(Hanya yang kosong)</span>
+            </label>
             <Select
               value={formData.kamar_id}
               onChange={(e) => setFormData({ ...formData, kamar_id: e.target.value })}
               required
             >
-              <option value="">Pilih Kamar...</option>
+              <option value="">-- Pilih Kamar Tersedia --</option>
               {kamars?.map((k: any) => (
-                <option key={k.id} value={k.id}>{k.nomor_kamar} - Rp {k.harga}</option>
+                <option key={k.id} value={k.id}>Kamar {k.nomor_kamar} - Rp {Number(k.harga).toLocaleString('id-ID')}</option>
               ))}
             </Select>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Penghuni</label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-bold text-navy">Penghuni</label>
             <Select
               value={formData.penghuni_id}
               onChange={(e) => setFormData({ ...formData, penghuni_id: e.target.value })}
               required
             >
-              <option value="">Pilih Penghuni...</option>
+              <option value="">-- Pilih Penghuni Terdaftar --</option>
               {penghunis?.map((p: any) => (
                 <option key={p.id} value={p.id}>{p.user?.name} ({p.nik})</option>
               ))}
             </Select>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Tanggal Mulai</label>
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-navy">Tanggal Mulai</label>
               <Input
                 type="date"
                 value={formData.tanggal_mulai}
@@ -219,8 +309,8 @@ export function KontrakList() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Tanggal Selesai</label>
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-navy">Tanggal Selesai</label>
               <Input
                 type="date"
                 value={formData.tanggal_selesai}
@@ -229,27 +319,29 @@ export function KontrakList() {
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Harga Kesepakatan</label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-bold text-navy">Harga Kesepakatan (Rp)</label>
             <Input
               type="number"
+              placeholder="1500000"
               value={formData.harga_kesepakatan}
               onChange={(e) => setFormData({ ...formData, harga_kesepakatan: e.target.value })}
               required
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Deposit (Opsional)</label>
+          <div className="space-y-1.5">
+            <label className="text-sm font-bold text-navy">Deposit Opsional (Rp)</label>
             <Input
               type="number"
+              placeholder="0"
               value={formData.deposit}
               onChange={(e) => setFormData({ ...formData, deposit: e.target.value })}
             />
           </div>
           
-          <div className="pt-4 flex justify-end space-x-2">
+          <div className="pt-6 flex justify-end space-x-3">
             <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Batal</Button>
-            <Button type="submit" isLoading={createMutation.isPending}>Simpan Kontrak</Button>
+            <Button type="submit" isLoading={createMutation.isPending} className="shadow-md">Simpan Kontrak</Button>
           </div>
         </form>
       </Modal>
@@ -260,9 +352,13 @@ export function KontrakList() {
         onClose={() => setIsStatusModalOpen(false)}
         title="Ubah Status Kontrak"
       >
-        <form onSubmit={handleUpdateStatus} className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Status Kontrak</label>
+        <form onSubmit={handleUpdateStatus} className="space-y-4 pt-2">
+          <div className="p-4 bg-slate-50 rounded-xl mb-4 text-sm text-slate-600">
+            Anda akan mengubah status kontrak untuk <strong className="text-navy">{selectedItem?.penghuni?.user?.name}</strong> di <strong className="text-navy">Kamar {selectedItem?.kamar?.nomor_kamar}</strong>.
+            Jika diubah ke <strong>Selesai</strong> atau <strong>Batal</strong>, status kamar akan otomatis menjadi <strong>Kosong</strong>.
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-bold text-navy">Status Kontrak</label>
             <Select
               value={statusData}
               onChange={(e) => setStatusData(e.target.value)}
@@ -273,9 +369,9 @@ export function KontrakList() {
               <option value="Batal">Batal</option>
             </Select>
           </div>
-          <div className="pt-4 flex justify-end space-x-2">
+          <div className="pt-6 flex justify-end space-x-3">
             <Button type="button" variant="ghost" onClick={() => setIsStatusModalOpen(false)}>Batal</Button>
-            <Button type="submit" isLoading={updateStatusMutation.isPending}>Simpan Perubahan</Button>
+            <Button type="submit" isLoading={updateStatusMutation.isPending} className="shadow-md">Simpan Perubahan</Button>
           </div>
         </form>
       </Modal>
