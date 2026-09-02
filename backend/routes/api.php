@@ -12,6 +12,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('kontrak_sewa', \App\Http\Controllers\KontrakSewaController::class);
     Route::apiResource('tagihan', \App\Http\Controllers\TagihanController::class);
     Route::apiResource('pembayaran', \App\Http\Controllers\PembayaranController::class);
+    Route::apiResource('pengeluaran', \App\Http\Controllers\PengeluaranController::class);
+    Route::apiResource('kategori_pengeluaran', \App\Http\Controllers\KategoriPengeluaranController::class);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
