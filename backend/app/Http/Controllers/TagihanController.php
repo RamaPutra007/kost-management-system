@@ -41,6 +41,10 @@ class TagihanController extends Controller
 
     public function show(Request $request, Tagihan $tagihan)
     {
+        if ($request->user()->role->name === 'Penghuni' && $tagihan->penghuni_id !== $request->user()->penghuni->id) {
+            abort(403, 'Unauthorized');
+        }
+
         $this->authorize('view', $tagihan);
         return response()->json($tagihan->load(['penghuni', 'kontrak_sewa']));
     }

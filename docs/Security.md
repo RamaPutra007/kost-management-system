@@ -4,9 +4,10 @@
 - Menggunakan Laravel Sanctum untuk SPA authentication (cookie-based) atau API token-based.
 - Implementasi session timeout dan pembatasan jumlah percobaan login yang gagal (Throttling).
 
-## 2. Authorization & Policy
+## 2. Authorization, Policy & IDOR
 - Menerapkan Role-Based Access Control (RBAC) di tingkat route menggunakan middleware.
-- Menerapkan Laravel Policy untuk validasi level data (contoh: Penghuni hanya bisa melihat datanya sendiri).
+- Menerapkan Laravel Policy untuk validasi tingkat data (contoh: Penghuni hanya bisa melihat datanya sendiri).
+- **IDOR (Insecure Direct Object Reference) Protection**: Controller secara eksplisit memverifikasi kepemilikan data (seperti `penghuni_id`) terhadap `$request->user()->penghuni->id` sebelum menampilkan detail atau memproses perubahan (Update/Delete) pada objek (seperti Tagihan dan Pembayaran).
 
 ## 3. Middleware
 - Menerapkan middleware untuk seluruh route yang bersifat private.
@@ -16,9 +17,9 @@
 - Menggunakan Form Requests untuk memvalidasi semua input data yang masuk.
 - Mencegah *mass assignment vulnerability* dengan mendefinisikan `$fillable` atau `$guarded` pada model Eloquent secara ketat.
 
-## 5. Rate Limiting
-- Menerapkan rate limiting pada endpoint publik (seperti `/login`) untuk mencegah *brute-force* dan DDoS.
-- Default limit API: 60 requests / minute.
+## 5. Rate Limiting (Throttle)
+- Menerapkan rate limiting pada seluruh endpoint API (khususnya untuk mencegah *brute-force* dan DDoS).
+- Default limit API telah dikonfigurasi melalui middleware `throttle:60,1` (Maksimal 60 request per menit).
 
 ## 6. CORS & CSRF
 - **CORS**: Mengonfigurasi `config/cors.php` untuk hanya mengizinkan permintaan dari domain frontend yang valid.

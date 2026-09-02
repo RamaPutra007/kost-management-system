@@ -54,6 +54,10 @@ class PembayaranController extends Controller
 
     public function show(Request $request, Pembayaran $pembayaran)
     {
+        if ($request->user()->role->name === 'Penghuni' && $pembayaran->penghuni_id !== $request->user()->penghuni->id) {
+            abort(403, 'Unauthorized');
+        }
+
         $this->authorize('view', $pembayaran);
         return response()->json($pembayaran->load(['penghuni', 'tagihan']));
     }

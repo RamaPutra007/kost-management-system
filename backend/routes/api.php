@@ -3,9 +3,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:60,1');
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::apiResource('kost', \App\Http\Controllers\KostController::class);
     Route::apiResource('kamar', \App\Http\Controllers\KamarController::class);
     Route::apiResource('penghuni', \App\Http\Controllers\PenghuniController::class);
