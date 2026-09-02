@@ -27,7 +27,7 @@ export function Login() {
 
     try {
       const res = await api.post('/login', { email, password });
-      login(res.data.token, res.data.user);
+      login(res.data.access_token, res.data.user);
       navigate('/dashboard', { replace: true });
     } catch (err: any) {
       if (err.response?.status === 429) {
