@@ -1,0 +1,27 @@
+{
+  "nodes": [
+    {"id": "user", "type": "text", "text": "## USER", "x": 0, "y": 0, "width": 250, "height": 80, "color": "1"},
+    {"id": "frontend_layer", "type": "group", "label": "Frontend Layer", "x": -50, "y": 120, "width": 350, "height": 260, "color": "2"},
+    {"id": "react", "type": "text", "text": "## REACT SPA", "x": 0, "y": 160, "width": 250, "height": 80},
+    {"id": "axios", "type": "text", "text": "## AXIOS", "x": 0, "y": 280, "width": 250, "height": 80},
+    {"id": "api_layer", "type": "group", "label": "API Layer", "x": -50, "y": 420, "width": 350, "height": 140, "color": "3"},
+    {"id": "laravel_api", "type": "text", "text": "## LARAVEL REST API", "x": 0, "y": 460, "width": 250, "height": 80},
+    {"id": "application_layer", "type": "group", "label": "Application Layer", "x": -50, "y": 600, "width": 350, "height": 380, "color": "4"},
+    {"id": "auth", "type": "text", "text": "## AUTHENTICATION", "x": 0, "y": 640, "width": 250, "height": 80},
+    {"id": "author", "type": "text", "text": "## AUTHORIZATION", "x": 0, "y": 760, "width": 250, "height": 80},
+    {"id": "business", "type": "text", "text": "## BUSINESS LOGIC", "x": 0, "y": 880, "width": 250, "height": 80},
+    {"id": "database_layer", "type": "group", "label": "Database Layer", "x": -50, "y": 1020, "width": 350, "height": 260, "color": "5"},
+    {"id": "eloquent", "type": "text", "text": "## ELOQUENT ORM", "x": 0, "y": 1060, "width": 250, "height": 80},
+    {"id": "mysql", "type": "text", "text": "## MYSQL", "x": 0, "y": 1180, "width": 250, "height": 80}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "user", "fromSide": "bottom", "toNode": "react", "toSide": "top"},
+    {"id": "e2", "fromNode": "react", "fromSide": "bottom", "toNode": "axios", "toSide": "top"},
+    {"id": "e3", "fromNode": "axios", "fromSide": "bottom", "toNode": "laravel_api", "toSide": "top"},
+    {"id": "e4", "fromNode": "laravel_api", "fromSide": "bottom", "toNode": "auth", "toSide": "top"},
+    {"id": "e5", "fromNode": "auth", "fromSide": "bottom", "toNode": "author", "toSide": "top"},
+    {"id": "e6", "fromNode": "author", "fromSide": "bottom", "toNode": "business", "toSide": "top"},
+    {"id": "e7", "fromNode": "business", "fromSide": "bottom", "toNode": "eloquent", "toSide": "top"},
+    {"id": "e8", "fromNode": "eloquent", "fromSide": "bottom", "toNode": "mysql", "toSide": "top"}
+  ]
+}

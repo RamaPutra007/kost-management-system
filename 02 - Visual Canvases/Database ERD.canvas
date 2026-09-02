@@ -1,0 +1,29 @@
+{
+  "nodes": [
+    {"id": "users", "type": "text", "text": "## users\nid, name, email, role_id", "x": 0, "y": 0, "width": 250, "height": 100},
+    {"id": "roles", "type": "text", "text": "## roles\nid, name", "x": -300, "y": 0, "width": 200, "height": 100},
+    {"id": "penghuni", "type": "text", "text": "## penghuni\nid, user_id, nik, telepon", "x": 350, "y": 0, "width": 250, "height": 100},
+    {"id": "notifications", "type": "text", "text": "## notifications\nid, user_id, title, message", "x": 0, "y": 200, "width": 250, "height": 100},
+    {"id": "kosts", "type": "text", "text": "## kosts\nid, nama, alamat", "x": 0, "y": -400, "width": 250, "height": 100},
+    {"id": "kamar", "type": "text", "text": "## kamar\nid, kost_id, nomor_kamar", "x": 350, "y": -400, "width": 250, "height": 100},
+    {"id": "kontrak_sewa", "type": "text", "text": "## kontrak_sewa\nid, kamar_id, penghuni_id", "x": 350, "y": -200, "width": 250, "height": 100},
+    {"id": "tagihan", "type": "text", "text": "## tagihan\nid, penghuni_id, kontrak_sewa_id", "x": 700, "y": -200, "width": 250, "height": 100},
+    {"id": "pembayaran", "type": "text", "text": "## pembayaran\nid, tagihan_id, penghuni_id", "x": 700, "y": 0, "width": 250, "height": 100},
+    {"id": "kategori_pengeluaran", "type": "text", "text": "## kategori_pengeluaran\nid, nama_kategori", "x": -350, "y": -200, "width": 250, "height": 100},
+    {"id": "pengeluaran", "type": "text", "text": "## pengeluaran\nid, kost_id, kategori_id", "x": -350, "y": -400, "width": 250, "height": 100}
+  ],
+  "edges": [
+    {"id": "e1", "fromNode": "roles", "fromSide": "right", "toNode": "users", "toSide": "left"},
+    {"id": "e2", "fromNode": "users", "fromSide": "right", "toNode": "penghuni", "toSide": "left"},
+    {"id": "e3", "fromNode": "users", "fromSide": "bottom", "toNode": "notifications", "toSide": "top"},
+    {"id": "e4", "fromNode": "kosts", "fromSide": "right", "toNode": "kamar", "toSide": "left"},
+    {"id": "e5", "fromNode": "kosts", "fromSide": "left", "toNode": "pengeluaran", "toSide": "right"},
+    {"id": "e6", "fromNode": "kamar", "fromSide": "bottom", "toNode": "kontrak_sewa", "toSide": "top"},
+    {"id": "e7", "fromNode": "penghuni", "fromSide": "top", "toNode": "kontrak_sewa", "toSide": "bottom"},
+    {"id": "e8", "fromNode": "penghuni", "fromSide": "right", "toNode": "tagihan", "toSide": "bottom"},
+    {"id": "e9", "fromNode": "penghuni", "fromSide": "right", "toNode": "pembayaran", "toSide": "left"},
+    {"id": "e10", "fromNode": "kontrak_sewa", "fromSide": "right", "toNode": "tagihan", "toSide": "left"},
+    {"id": "e11", "fromNode": "tagihan", "fromSide": "bottom", "toNode": "pembayaran", "toSide": "top"},
+    {"id": "e12", "fromNode": "kategori_pengeluaran", "fromSide": "top", "toNode": "pengeluaran", "toSide": "bottom"}
+  ]
+}
