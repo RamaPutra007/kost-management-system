@@ -1,6 +1,6 @@
 # Kost Management System
 
-Aplikasi manajemen sewa kost (kost-kostan) modern dengan antarmuka pengguna berbasis React dan API menggunakan Laravel 11/13.
+Aplikasi manajemen sewa kost (kost-kostan) modern dengan antarmuka pengguna berbasis React dan API menggunakan Laravel 13.
 
 ## Fitur Utama
 
