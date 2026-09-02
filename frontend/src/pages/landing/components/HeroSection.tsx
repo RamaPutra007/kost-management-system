@@ -104,102 +104,99 @@ export function HeroSection() {
         </div>
       </header>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-        <div className="inline-flex items-center space-x-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-          </span>
-          <span>Sistem Manajemen Kost #1 di Indonesia</span>
-        </div>
-        
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-navy tracking-tight mb-6 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100 leading-tight">
-          Kelola Kost Lebih <span className="text-primary bg-primary/10 px-4 py-1 rounded-2xl whitespace-nowrap">Mudah</span>,<br className="hidden md:block" /> Lebih Teratur, Lebih Menguntungkan
-        </h1>
-        
-        <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-3xl mx-auto leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-          Platform all-in-one cerdas untuk mengelola data kamar, penghuni, kontrak sewa, tagihan, pembayaran otomatis, hingga pembukuan keuangan kost Anda dalam satu layar.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
-          <Link to="/login">
-            <Button size="xl" variant="primary" className="w-full sm:w-auto rounded-full shadow-xl shadow-primary/30 group">
-              Mulai Sekarang Gratis
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-          <a href="#tampilan">
-            <Button size="xl" variant="outline" className="w-full sm:w-auto rounded-full border-slate-300 text-slate-700 hover:bg-slate-50 group">
-              <PlayCircle className="mr-2 w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
-              Lihat Tampilan
-            </Button>
-          </a>
-        </div>
-      </div>
-
-      {/* Dashboard Mockup Showcase */}
-      <div className="relative mt-20 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 z-10 animate-in fade-in slide-in-from-bottom-24 duration-1000 delay-500">
-        <div className="rounded-2xl md:rounded-[2rem] p-2 md:p-4 bg-white/40 backdrop-blur-2xl shadow-2xl shadow-navy/5 border border-white/60">
-          <div className="bg-navy rounded-xl md:rounded-[1.5rem] overflow-hidden shadow-2xl relative border border-slate-800">
-            {/* Mockup Header bar */}
-            <div className="h-10 bg-slate-900 flex items-center px-4 space-x-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 pt-10">
+        <div className="grid lg:grid-cols-2 gap-16 lg:gap-8 items-center">
+          {/* Left Content - Text & CTA */}
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center space-x-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              </span>
+              <span>Sistem Manajemen Kost #1 di Indonesia</span>
             </div>
-            {/* Mockup Content */}
-            <div className="aspect-[16/9] md:aspect-[16/10] bg-slate-50 w-full relative overflow-hidden">
-              {/* Fake Sidebar */}
-              <div className="absolute left-0 top-0 bottom-0 w-48 lg:w-64 bg-navy p-4 hidden sm:block border-r border-slate-800/50">
-                <div className="h-8 w-32 bg-slate-800 rounded-lg mb-8" />
-                <div className="space-y-3">
-                  <div className="h-10 w-full bg-primary rounded-xl" />
-                  <div className="h-10 w-full bg-slate-800/50 rounded-xl" />
-                  <div className="h-10 w-full bg-slate-800/50 rounded-xl" />
-                  <div className="h-10 w-full bg-slate-800/50 rounded-xl" />
+            
+            <h1 className="text-4xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold text-navy tracking-tight mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100 leading-tight">
+              Kelola Kost Lebih <span className="text-primary bg-primary/10 px-4 py-1 rounded-2xl whitespace-nowrap">Mudah</span>,<br className="hidden md:block lg:hidden xl:block" /> Lebih Teratur, Lebih Menguntungkan
+            </h1>
+            
+            <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-3xl mx-auto lg:mx-0 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+              Platform all-in-one cerdas untuk mengelola data kamar, penghuni, kontrak sewa, tagihan, pembayaran otomatis, hingga pembukuan keuangan kost Anda dalam satu layar.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-6 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+              <Link to="/login">
+                <Button size="xl" variant="primary" className="w-full sm:w-auto rounded-full shadow-xl shadow-primary/30 group">
+                  Mulai Sekarang Gratis
+                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+              <a href="#tampilan">
+                <Button size="xl" variant="outline" className="w-full sm:w-auto rounded-full border-slate-300 text-slate-700 hover:bg-slate-50 group">
+                  <PlayCircle className="mr-2 w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
+                  Lihat Tampilan
+                </Button>
+              </a>
+            </div>
+          </div>
+
+          {/* Right Content - Dashboard Mockup Showcase */}
+          <div className="relative w-full animate-in fade-in slide-in-from-bottom-24 duration-1000 delay-500">
+            <div className="rounded-2xl md:rounded-[2rem] p-2 md:p-4 bg-white/40 backdrop-blur-2xl shadow-2xl shadow-navy/5 border border-white/60 transform lg:-rotate-2 transition-transform hover:rotate-0 duration-500">
+              <div className="bg-navy rounded-xl md:rounded-[1.5rem] overflow-hidden shadow-2xl relative border border-slate-800">
+                {/* Mockup Header bar */}
+                <div className="h-10 bg-slate-900 flex items-center px-4 space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 </div>
-              </div>
-              {/* Fake Main Content */}
-              <div className="absolute left-0 right-0 sm:left-48 lg:left-64 top-0 bottom-0 p-4 lg:p-8 bg-slate-50 overflow-hidden">
-                <div className="flex justify-between items-center mb-8">
-                  <div className="h-8 w-40 bg-slate-200 rounded-lg" />
-                  <div className="h-10 w-10 bg-slate-200 rounded-full" />
-                </div>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-                  <div className="h-32 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
-                    <div className="h-4 w-24 bg-slate-100 rounded-md" />
-                    <div className="h-8 w-32 bg-slate-800 rounded-md" />
+                {/* Mockup Content */}
+                <div className="aspect-[16/10] bg-slate-50 w-full relative overflow-hidden">
+                  {/* Fake Sidebar */}
+                  <div className="absolute left-0 top-0 bottom-0 w-32 md:w-48 bg-navy p-4 hidden sm:block border-r border-slate-800/50">
+                    <div className="h-6 w-24 bg-slate-800 rounded-lg mb-6" />
+                    <div className="space-y-2">
+                      <div className="h-8 w-full bg-primary rounded-lg" />
+                      <div className="h-8 w-full bg-slate-800/50 rounded-lg" />
+                      <div className="h-8 w-full bg-slate-800/50 rounded-lg" />
+                      <div className="h-8 w-full bg-slate-800/50 rounded-lg" />
+                    </div>
                   </div>
-                  <div className="h-32 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between">
-                    <div className="h-4 w-24 bg-slate-100 rounded-md" />
-                    <div className="h-8 w-32 bg-primary rounded-md" />
+                  {/* Fake Main Content */}
+                  <div className="absolute left-0 right-0 sm:left-32 md:left-48 top-0 bottom-0 p-4 md:p-6 bg-slate-50 overflow-hidden">
+                    <div className="flex justify-between items-center mb-6">
+                      <div className="h-6 w-32 bg-slate-200 rounded-lg" />
+                      <div className="h-8 w-8 bg-slate-200 rounded-full" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="h-24 bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex flex-col justify-between">
+                        <div className="h-3 w-20 bg-slate-100 rounded-md" />
+                        <div className="h-6 w-24 bg-slate-800 rounded-md" />
+                      </div>
+                      <div className="h-24 bg-white rounded-xl shadow-sm border border-slate-100 p-4 flex flex-col justify-between">
+                        <div className="h-3 w-20 bg-slate-100 rounded-md" />
+                        <div className="h-6 w-24 bg-primary rounded-md" />
+                      </div>
+                    </div>
+                    <div className="h-40 bg-white rounded-xl shadow-sm border border-slate-100" />
                   </div>
-                  <div className="h-32 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hidden md:flex flex-col justify-between">
-                    <div className="h-4 w-24 bg-slate-100 rounded-md" />
-                    <div className="h-8 w-32 bg-slate-800 rounded-md" />
+                  
+                  {/* Floating Decorative Cards */}
+                  <div className="absolute -right-2 md:-right-4 top-1/4 w-40 md:w-48 h-28 md:h-32 bg-white rounded-xl md:rounded-2xl shadow-2xl border border-slate-100 p-3 md:p-4 animate-bounce hidden sm:block" style={{ animationDuration: '3s' }}>
+                    <div className="flex items-center space-x-2 md:space-x-3 mb-2 md:mb-3">
+                      <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-green-100 flex items-center justify-center">
+                        <div className="w-3 h-3 md:w-4 md:h-4 text-green-600 font-bold text-[10px] md:text-xs">✓</div>
+                      </div>
+                      <div>
+                        <div className="h-2 md:h-3 w-16 md:w-20 bg-slate-200 rounded mb-1" />
+                        <div className="h-1.5 md:h-2 w-12 md:w-16 bg-slate-100 rounded" />
+                      </div>
+                    </div>
+                    <div className="h-3 md:h-4 w-3/4 bg-slate-800 rounded mb-2" />
+                    <div className="h-6 md:h-8 w-full bg-green-50 rounded-lg mt-2 md:mt-3 flex items-center justify-center">
+                      <span className="text-[10px] md:text-xs font-bold text-green-600">Lunas Rp1.500.000</span>
+                    </div>
                   </div>
-                  <div className="h-32 bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hidden lg:flex flex-col justify-between">
-                    <div className="h-4 w-24 bg-slate-100 rounded-md" />
-                    <div className="h-8 w-32 bg-slate-800 rounded-md" />
-                  </div>
-                </div>
-                <div className="h-64 bg-white rounded-2xl shadow-sm border border-slate-100" />
-              </div>
-              
-              {/* Floating Decorative Cards */}
-              <div className="absolute -right-4 top-1/4 w-48 h-32 bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 animate-bounce hidden lg:block" style={{ animationDuration: '3s' }}>
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <div className="w-4 h-4 text-green-600 font-bold text-xs">✓</div>
-                  </div>
-                  <div>
-                    <div className="h-3 w-20 bg-slate-200 rounded mb-1" />
-                    <div className="h-2 w-16 bg-slate-100 rounded" />
-                  </div>
-                </div>
-                <div className="h-4 w-3/4 bg-slate-800 rounded mb-2" />
-                <div className="h-8 w-full bg-green-50 rounded-lg mt-3 flex items-center justify-center">
-                  <span className="text-xs font-bold text-green-600">Lunas Rp1.500.000</span>
                 </div>
               </div>
             </div>

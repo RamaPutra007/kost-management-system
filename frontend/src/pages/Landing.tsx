@@ -12,6 +12,10 @@ import { CtaFooterSection } from './landing/components/CtaFooterSection';
 export function Landing() {
   // Simple smooth scroll logic for anchor links
   useEffect(() => {
+    // Reset to top (Beranda) on mount/refresh
+    window.history.replaceState(null, '', window.location.pathname);
+    window.scrollTo(0, 0);
+
     const handleHashChange = () => {
       const hash = window.location.hash;
       if (hash) {
@@ -21,9 +25,6 @@ export function Landing() {
         }
       }
     };
-    
-    // Initial check
-    handleHashChange();
     
     // Listen for hash changes
     window.addEventListener('hashchange', handleHashChange);
