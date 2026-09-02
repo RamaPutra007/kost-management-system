@@ -76,48 +76,164 @@ export function ShowcaseSection() {
               </div>
 
               {/* Fake Content */}
-              <div className="flex-1 bg-slate-50 p-4 sm:p-8 overflow-hidden">
-                <div className="flex justify-between items-center mb-8">
-                  <div className="h-8 w-40 bg-slate-200 rounded-lg" />
-                  <div className="h-10 w-10 bg-slate-200 rounded-full" />
+              <div className="flex-1 bg-slate-50 p-4 sm:p-8 overflow-hidden overflow-y-auto custom-scrollbar">
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex items-center space-x-2">
+                    <div className="h-4 w-12 bg-slate-200 rounded" />
+                    <span className="text-slate-300">/</span>
+                    <div className="h-4 w-20 bg-slate-300 rounded" />
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="h-8 w-8 bg-slate-200 rounded-full" />
+                    <div className="h-10 w-10 bg-primary/20 rounded-full border-2 border-white shadow-sm" />
+                  </div>
                 </div>
                 
                 {/* Specific Layout per tab */}
                 {activeTab === 'owner' && (
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                      {[1,2,3,4].map(i => <div key={i} className="h-28 bg-white rounded-xl border border-slate-200 shadow-sm" />)}
+                  <div className="space-y-6 animate-in fade-in duration-500">
+                    <div>
+                      <div className="h-6 w-64 bg-slate-800 rounded-md mb-2" />
+                      <div className="h-3 w-48 bg-slate-400 rounded-md" />
                     </div>
-                    <div className="h-64 bg-white rounded-xl border border-slate-200 shadow-sm flex items-end p-6 space-x-2">
-                       {/* Fake Chart */}
-                       {[40, 70, 45, 90, 65, 100, 80].map((h, i) => (
-                         <div key={i} className="flex-1 bg-primary/20 rounded-t-sm" style={{ height: `${h}%` }}>
-                           <div className="w-full bg-primary rounded-t-sm" style={{ height: '4px' }} />
+                    
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                      {[
+                        { bg: 'bg-blue-100', dot: 'bg-blue-500' },
+                        { bg: 'bg-green-100', dot: 'bg-green-500' },
+                        { bg: 'bg-amber-100', dot: 'bg-amber-500' },
+                        { bg: 'bg-primary/10', dot: 'bg-primary' }
+                      ].map((card, i) => (
+                        <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="space-y-2">
+                              <div className="h-2 w-16 bg-slate-300 rounded" />
+                              <div className="h-5 w-24 bg-navy rounded" />
+                            </div>
+                            <div className={`w-8 h-8 rounded-lg ${card.bg} flex items-center justify-center`}>
+                              <div className={`w-3 h-3 rounded-full ${card.dot}`} />
+                            </div>
+                          </div>
+                          <div className="h-2 w-20 bg-slate-200 rounded" />
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                      <div className="lg:col-span-2 h-48 bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex flex-col">
+                        <div className="h-4 w-32 bg-slate-700 rounded mb-auto" />
+                        <div className="flex items-end space-x-1 h-24 w-full mt-4">
+                          {[40, 70, 45, 90, 65, 100, 80, 50, 85, 60].map((h, i) => (
+                            <div key={i} className="flex-1 bg-primary/20 rounded-t-sm relative" style={{ height: `${h}%` }}>
+                              <div className="absolute top-0 left-0 right-0 h-1 bg-primary rounded-t-sm" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="h-48 bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                         <div className="h-4 w-32 bg-slate-700 rounded mb-4" />
+                         <div className="flex justify-center items-center h-24">
+                           <div className="w-24 h-24 rounded-full border-8 border-primary/20 border-t-primary border-r-green-500 border-b-amber-500" />
                          </div>
-                       ))}
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'admin' && (
-                  <div className="space-y-6">
-                    <div className="h-12 bg-white rounded-xl border border-slate-200 shadow-sm w-full" />
-                    <div className="h-[400px] bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col p-4">
-                      <div className="h-8 bg-slate-100 rounded mb-4" />
-                      {[1,2,3,4,5].map(i => <div key={i} className="h-12 bg-slate-50 border-b border-slate-100 mb-2 rounded" />)}
+                  <div className="space-y-6 animate-in fade-in duration-500">
+                    <div>
+                      <div className="h-6 w-56 bg-slate-800 rounded-md mb-2" />
+                      <div className="h-3 w-64 bg-slate-400 rounded-md" />
+                    </div>
+
+                    <div className="flex gap-2 mb-2 overflow-hidden">
+                      {[1,2,3,4].map(i => (
+                        <div key={i} className="h-8 w-28 bg-primary/90 rounded-md shrink-0" />
+                      ))}
+                    </div>
+                    
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                      {[1,2,3].map(i => (
+                        <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex justify-between items-center">
+                          <div className="space-y-2">
+                            <div className="h-2 w-16 bg-slate-300 rounded" />
+                            <div className="h-6 w-12 bg-navy rounded" />
+                          </div>
+                          <div className="w-10 h-10 rounded-xl bg-slate-100" />
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      <div className="h-40 bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                        <div className="flex items-center mb-4">
+                          <div className="w-4 h-4 bg-warning rounded mr-2" />
+                          <div className="h-4 w-32 bg-slate-700 rounded" />
+                        </div>
+                        <div className="space-y-3">
+                          {[1,2].map(i => (
+                            <div key={i} className="flex justify-between items-center">
+                              <div className="flex items-center space-x-2">
+                                <div className="w-6 h-6 rounded-full bg-slate-200" />
+                                <div className="space-y-1">
+                                  <div className="h-2 w-20 bg-slate-600 rounded" />
+                                  <div className="h-2 w-12 bg-slate-300 rounded" />
+                                </div>
+                              </div>
+                              <div className="h-3 w-16 bg-slate-200 rounded" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="h-40 bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                        <div className="flex items-center mb-4">
+                          <div className="w-4 h-4 bg-danger rounded mr-2" />
+                          <div className="h-4 w-32 bg-slate-700 rounded" />
+                        </div>
+                        <div className="space-y-3">
+                          {[1,2].map(i => (
+                            <div key={i} className="flex justify-between items-center">
+                              <div className="space-y-1">
+                                <div className="h-2 w-24 bg-slate-600 rounded" />
+                                <div className="h-2 w-16 bg-slate-300 rounded" />
+                              </div>
+                              <div className="h-4 w-12 bg-danger/20 rounded-full" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {activeTab === 'penghuni' && (
-                  <div className="space-y-6 max-w-3xl mx-auto">
-                    <div className="h-40 bg-gradient-to-r from-primary to-blue-400 rounded-2xl shadow-lg p-6 flex flex-col justify-between">
-                      <div className="h-6 w-32 bg-white/20 rounded-md" />
-                      <div className="h-12 w-48 bg-white rounded-md shadow-sm" />
+                  <div className="space-y-6 max-w-3xl mx-auto animate-in fade-in duration-500 pt-4">
+                    <div className="h-24 sm:h-32 bg-primary rounded-2xl shadow-lg p-6 flex flex-col justify-center relative overflow-hidden">
+                      <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+                      <div className="h-6 w-40 bg-white rounded-md mb-2 relative z-10" />
+                      <div className="h-3 w-56 bg-primary-light/50 rounded-md relative z-10" />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                       <div className="h-32 bg-white rounded-xl border border-slate-200 shadow-sm" />
-                       <div className="h-32 bg-white rounded-xl border border-slate-200 shadow-sm" />
+                    
+                    <div className="h-28 bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex justify-between items-center">
+                      <div>
+                        <div className="h-2 w-20 bg-slate-400 rounded mb-2" />
+                        <div className="h-8 w-16 bg-navy rounded mb-2" />
+                        <div className="h-4 w-12 bg-green-100 rounded-full" />
+                      </div>
+                      <div className="text-right">
+                        <div className="h-2 w-20 bg-slate-400 rounded mb-2 ml-auto" />
+                        <div className="h-6 w-24 bg-primary rounded mb-1 ml-auto" />
+                        <div className="h-2 w-10 bg-slate-300 rounded ml-auto" />
+                      </div>
+                    </div>
+
+                    <div className="h-24 bg-danger/5 rounded-xl border border-danger/20 shadow-sm p-5 flex justify-between items-center">
+                      <div>
+                        <div className="h-6 w-24 bg-danger rounded mb-2" />
+                        <div className="h-3 w-16 bg-slate-400 rounded" />
+                      </div>
+                      <div className="h-8 w-28 bg-danger rounded-md" />
                     </div>
                   </div>
                 )}
