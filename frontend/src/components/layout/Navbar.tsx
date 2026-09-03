@@ -15,14 +15,8 @@ interface NavbarProps {
 }
 
 export function Navbar({ onMenuClick, user }: NavbarProps) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const { logout } = useAuth();
   const navigate = useNavigate();
-
-  const handleToggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    // In a real app, toggle dark class on document.documentElement
-  };
 
   const profileMenu = [
     { label: 'Profil Saya', onClick: () => navigate('/profil') },
@@ -52,17 +46,12 @@ export function Navbar({ onMenuClick, user }: NavbarProps) {
 
       <div className="flex items-center space-x-2 sm:space-x-4 shrink-0">
         
-        {/* Dark Mode Toggle */}
-        <button 
-          onClick={handleToggleTheme}
-          className="p-2.5 text-slate-400 hover:text-navy hover:bg-slate-100 rounded-xl transition-colors hidden sm:block"
-          title="Toggle Dark Mode"
-        >
-          {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
-
         {/* Notification Menu */}
-        <button className="relative p-2.5 text-slate-400 hover:text-navy hover:bg-slate-100 rounded-xl transition-colors">
+        <button 
+          onClick={() => navigate('/notifikasi')}
+          className="relative p-2.5 text-slate-400 hover:text-navy hover:bg-slate-100 rounded-xl transition-colors"
+          title="Notifikasi"
+        >
           <Bell className="w-5 h-5" />
           <span className="absolute top-2 right-2.5 w-2 h-2 bg-danger rounded-full border-2 border-white"></span>
         </button>

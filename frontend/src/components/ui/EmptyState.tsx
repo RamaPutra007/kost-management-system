@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { FolderSearch } from 'lucide-react';
+import { Inbox } from 'lucide-react';
 import { Button } from './Button';
 
 interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -13,16 +13,29 @@ interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   };
 }
 
-export function EmptyState({ className, icon, title, description, action, ...props }: EmptyStateProps) {
+export function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+  className,
+  ...props
+}: EmptyStateProps) {
   return (
-    <div className={cn("flex flex-col items-center justify-center p-8 sm:p-12 text-center rounded-2xl border border-dashed border-gray-300 bg-slate-50", className)} {...props}>
-      <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4 text-slate-400">
-        {icon || <FolderSearch className="w-8 h-8" />}
+    <div
+      className={cn(
+        'flex flex-col items-center justify-center p-8 text-center rounded-2xl border border-dashed border-gray-300 bg-slate-50',
+        className
+      )}
+      {...props}
+    >
+      <div className="w-16 h-16 mb-4 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+        {icon || <Inbox className="w-8 h-8" />}
       </div>
-      <h3 className="text-lg font-bold text-navy mb-2">{title}</h3>
-      {description && <p className="text-sm text-slate-500 max-w-sm mb-6">{description}</p>}
+      <h3 className="text-lg font-bold text-navy mb-1">{title}</h3>
+      {description && <p className="text-sm text-slate-500 mb-6 max-w-sm">{description}</p>}
       {action && (
-        <Button onClick={action.onClick} variant="primary">
+        <Button variant="outline" onClick={action.onClick}>
           {action.label}
         </Button>
       )}

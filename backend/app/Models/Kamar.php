@@ -8,4 +8,5 @@ class Kamar extends Model {
     protected $guarded = [];
     public function kost() { return $this->belongsTo(Kost::class); }
     public function kontrakSewas() { return $this->hasMany(KontrakSewa::class); }
+    public function fasilitas() { return $this->belongsToMany(Fasilitas::class, 'fasilitas_kamar'); }
 }

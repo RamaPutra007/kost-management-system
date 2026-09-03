@@ -7,6 +7,7 @@ use App\Models\Kost;
 use App\Models\Kamar;
 use App\Models\Penghuni;
 use App\Models\KontrakSewa;
+use App\Models\Fasilitas;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -49,9 +50,14 @@ class DatabaseSeeder extends Seeder
             'nomor_kamar' => 'A1',
             'tipe' => 'VIP',
             'harga' => 1500000,
-            'fasilitas' => 'AC, Kamar Mandi Dalam',
             'status' => 'Kosong',
         ]);
+
+        $f1 = Fasilitas::create(['nama_fasilitas' => 'AC', 'icon' => 'AirVent']);
+        $f2 = Fasilitas::create(['nama_fasilitas' => 'Kamar Mandi Dalam', 'icon' => 'ShowerHead']);
+        $f3 = Fasilitas::create(['nama_fasilitas' => 'Water Heater', 'icon' => 'Thermometer']);
+        
+        $kamar->fasilitas()->sync([$f1->id, $f2->id]);
 
         $penghuni = Penghuni::create([
             'user_id' => $penghuniUser->id,

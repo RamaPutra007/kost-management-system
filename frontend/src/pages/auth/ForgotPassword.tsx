@@ -20,13 +20,16 @@ export function ForgotPassword() {
     setIsLoading(true);
 
     try {
-      await api.post('/api/forgot-password', { email });
+      await api.post('/forgot-password', { email });
       setSuccess(true);
     } catch (err: any) {
       if (err.response?.status === 429) {
         setError('Terlalu banyak percobaan. Silakan tunggu beberapa saat.');
       } else {
-        setError(err.response?.data?.message || 'Gagal mengirim link reset password.');
+        setError(
+          err.response?.data?.message ||
+          'Gagal mengirim link reset password.'
+        );
       }
     } finally {
       setIsLoading(false);
@@ -35,7 +38,7 @@ export function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans selection:bg-primary/30 relative overflow-hidden">
-      
+
       {/* Background Gradients */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" />
@@ -55,7 +58,7 @@ export function ForgotPassword() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         <div className="bg-white py-10 px-4 sm:px-10 shadow-2xl border border-slate-100 rounded-3xl">
-          
+
           <div className="mb-8 text-center">
             <h2 className="text-2xl font-extrabold text-navy mb-2">Lupa Password?</h2>
             <p className="text-slate-500 font-medium text-sm">

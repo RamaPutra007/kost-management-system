@@ -45,7 +45,6 @@ export function Sidebar({
       case 'Owner':
         return [
           { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-          { name: 'Kost', path: '/kost', icon: Building2 }, // Assuming /kost exists or will be added
           { name: 'Kamar', path: '/kamar', icon: Home },
           { name: 'Penghuni', path: '/penghuni', icon: Users },
           { name: 'Kontrak', path: '/kontrak', icon: FileText },
@@ -54,9 +53,6 @@ export function Sidebar({
           { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
           { name: 'Laporan', path: '/laporan', icon: FileText },
           { name: 'Pengguna', path: '/pengguna', icon: Users },
-          { name: 'Notifikasi', path: '/notifikasi', icon: Bell },
-          { name: 'Profil', path: '/profil', icon: User },
-          { name: 'Pengaturan', path: '/pengaturan', icon: Settings },
         ];
       case 'Admin':
         return [
@@ -68,8 +64,6 @@ export function Sidebar({
           { name: 'Pembayaran', path: '/pembayaran', icon: Wallet },
           { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
           { name: 'Laporan', path: '/laporan', icon: FileText },
-          { name: 'Notifikasi', path: '/notifikasi', icon: Bell },
-          { name: 'Profil', path: '/profil', icon: User },
         ];
       case 'Penghuni':
       default:
@@ -78,8 +72,6 @@ export function Sidebar({
           { name: 'Tagihan', path: '/my-bills', icon: CreditCard },
           { name: 'Pembayaran', path: '/my-payments', icon: Wallet },
           { name: 'Kontrak', path: '/my-contract', icon: FileText },
-          { name: 'Notifikasi', path: '/my-notifications', icon: Bell },
-          { name: 'Profil', path: '/my-profile', icon: User },
         ];
     }
   };
@@ -167,21 +159,6 @@ export function Sidebar({
             className="hidden lg:flex w-full items-center justify-center p-2 text-slate-500 hover:bg-slate-800 hover:text-white rounded-xl transition-colors"
           >
             {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-          </button>
-
-          <button
-            onClick={logout}
-            title={isCollapsed && !isOpen ? 'Keluar' : undefined}
-            className={cn(
-              "flex w-full items-center text-sm font-bold text-slate-400 rounded-xl hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group",
-              isCollapsed && !isOpen ? "justify-center px-0 py-3" : "px-4 py-3.5"
-            )}
-          >
-            <LogOut className={cn(
-              "h-5 w-5 shrink-0 transition-colors",
-              isCollapsed && !isOpen ? "" : "mr-4 group-hover:text-red-400"
-            )} />
-            {(!isCollapsed || isOpen) && <span>Keluar Aplikasi</span>}
           </button>
         </div>
       </aside>

@@ -29,15 +29,6 @@ export function AppLayout() {
         
         <div className="flex-1 overflow-auto bg-slate-50 relative">
           <div className="p-4 sm:p-8 max-w-7xl mx-auto w-full">
-            <div className="mb-6">
-              <div className="flex items-center space-x-2 text-sm text-slate-500 mb-2">
-                <span className="font-medium hover:text-primary cursor-pointer">App</span>
-                <span>/</span>
-                <span className="font-bold text-navy capitalize">{location.pathname.split('/')[1] || 'Dashboard'}</span>
-              </div>
-              <h1 className="text-2xl font-extrabold text-navy capitalize">{location.pathname.split('/')[1] || 'Dashboard'}</h1>
-            </div>
-            
             <Outlet />
           </div>
           

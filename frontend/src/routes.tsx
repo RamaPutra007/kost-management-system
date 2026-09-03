@@ -24,6 +24,14 @@ import { MyPayments } from '@/pages/penghuni/MyPayments';
 // Unified Dashboard Entry
 import { DashboardEntry } from '@/pages/DashboardEntry';
 
+// New Functionality
+import { Notifications } from '@/pages/Notifications';
+import { Profil } from '@/pages/Profil';
+import { Laporan } from '@/pages/admin/Laporan';
+import { Pengguna } from '@/pages/admin/Pengguna';
+import { Pengaturan } from '@/pages/admin/Pengaturan';
+import { ComingSoon } from '@/pages/ComingSoon';
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -56,19 +64,19 @@ export const router = createBrowserRouter([
           { path: '/tagihan', element: <ProtectedRoute allowedRoles={['Admin', 'Owner']}><TagihanList /></ProtectedRoute> },
           { path: '/pembayaran', element: <ProtectedRoute allowedRoles={['Admin', 'Owner']}><PembayaranList /></ProtectedRoute> },
           { path: '/pengeluaran', element: <ProtectedRoute allowedRoles={['Admin', 'Owner']}><PengeluaranList /></ProtectedRoute> },
-          { path: '/laporan', element: <ProtectedRoute allowedRoles={['Admin', 'Owner']}><div>Laporan (WIP)</div></ProtectedRoute> },
-          { path: '/pengguna', element: <ProtectedRoute allowedRoles={['Owner']}><div>Pengguna (WIP)</div></ProtectedRoute> },
-          { path: '/pengaturan', element: <ProtectedRoute allowedRoles={['Owner']}><div>Pengaturan (WIP)</div></ProtectedRoute> },
-          { path: '/notifikasi', element: <div>Notifikasi (WIP)</div> },
-          { path: '/profil', element: <div>Profil (WIP)</div> },
+          { path: '/laporan', element: <ProtectedRoute allowedRoles={['Admin', 'Owner']}><Laporan /></ProtectedRoute> },
+          { path: '/pengguna', element: <ProtectedRoute allowedRoles={['Owner']}><Pengguna /></ProtectedRoute> },
+          { path: '/pengaturan', element: <ProtectedRoute allowedRoles={['Owner']}><Pengaturan /></ProtectedRoute> },
+          { path: '/notifikasi', element: <Notifications /> },
+          { path: '/profil', element: <Profil /> },
 
           // Penghuni Routes
           { path: '/my-room', element: <ProtectedRoute allowedRoles={['Penghuni']}><MyRoom /></ProtectedRoute> },
           { path: '/my-contract', element: <Navigate to="/my-room" replace /> },
           { path: '/my-bills', element: <ProtectedRoute allowedRoles={['Penghuni']}><MyBills /></ProtectedRoute> },
           { path: '/my-payments', element: <ProtectedRoute allowedRoles={['Penghuni']}><MyPayments /></ProtectedRoute> },
-          { path: '/my-profile', element: <ProtectedRoute allowedRoles={['Penghuni']}><div>My Profile (WIP)</div></ProtectedRoute> },
-          { path: '/my-notifications', element: <ProtectedRoute allowedRoles={['Penghuni']}><div>My Notifications (WIP)</div></ProtectedRoute> },
+          { path: '/my-profile', element: <ProtectedRoute allowedRoles={['Penghuni']}><Profil /></ProtectedRoute> },
+          { path: '/my-notifications', element: <ProtectedRoute allowedRoles={['Penghuni']}><Notifications /></ProtectedRoute> },
         ],
       },
     ],

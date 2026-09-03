@@ -10,7 +10,7 @@ class KamarController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Kamar::class);
-        $query = Kamar::query();
+        $query = Kamar::with('fasilitas');
         if ($request->has('kost_id')) {
             $query->where('kost_id', $request->kost_id);
         }
@@ -26,18 +26,24 @@ class KamarController extends Controller
             'nomor_kamar' => 'required|string|max:50',
             'tipe' => 'required|string|max:100',
             'harga' => 'required|numeric',
-            'fasilitas' => 'nullable|string',
+            'fasilitas_ids' => 'nullable|array',
+            'fasilitas_ids.*' => 'exists:fasilitas,id',
             'status' => 'sometimes|in:Kosong,Terisi,Perbaikan',
         ]);
 
         $kamar = Kamar::create($validated);
-        return response()->json($kamar, 201);
+        
+        if ($request->has('fasilitas_ids')) {
+            $kamar->fasilitas()->sync($request->fasilitas_ids);
+        }
+        
+        return response()->json($kamar->load('fasilitas'), 201);
     }
 
     public function show(Request $request, Kamar $kamar)
     {
         $this->authorize('view', $kamar);
-        return response()->json($kamar);
+        return response()->json($kamar->load('fasilitas'));
     }
 
     public function update(Request $request, Kamar $kamar)
@@ -49,12 +55,18 @@ class KamarController extends Controller
             'nomor_kamar' => 'sometimes|string|max:50',
             'tipe' => 'sometimes|string|max:100',
             'harga' => 'sometimes|numeric',
-            'fasilitas' => 'nullable|string',
+            'fasilitas_ids' => 'nullable|array',
+            'fasilitas_ids.*' => 'exists:fasilitas,id',
             'status' => 'sometimes|in:Kosong,Terisi,Perbaikan',
         ]);
 
         $kamar->update($validated);
-        return response()->json($kamar);
+        
+        if ($request->has('fasilitas_ids')) {
+            $kamar->fasilitas()->sync($request->fasilitas_ids);
+        }
+        
+        return response()->json($kamar->load('fasilitas'));
     }
 
     public function destroy(Request $request, Kamar $kamar)

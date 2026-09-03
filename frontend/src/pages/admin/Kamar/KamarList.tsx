@@ -26,12 +26,19 @@ export function KamarList() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    kost_id: string;
+    nomor_kamar: string;
+    tipe: string;
+    harga: string;
+    fasilitas_ids: number[];
+    status: string;
+  }>({
     kost_id: '',
     nomor_kamar: '',
     tipe: '',
     harga: '',
-    fasilitas: '',
+    fasilitas_ids: [],
     status: 'Kosong',
   });
 
@@ -47,6 +54,14 @@ export function KamarList() {
     queryKey: ['kost'],
     queryFn: async () => {
       const res = await api.get('/kost');
+      return res.data.data || res.data;
+    }
+  });
+
+  const { data: fasilitasMaster } = useQuery({
+    queryKey: ['fasilitas'],
+    queryFn: async () => {
+      const res = await api.get('/fasilitas');
       return res.data.data || res.data;
     }
   });
@@ -97,7 +112,7 @@ export function KamarList() {
       nomor_kamar: kamar.nomor_kamar,
       tipe: kamar.tipe,
       harga: kamar.harga,
-      fasilitas: kamar.fasilitas || '',
+      fasilitas_ids: kamar.fasilitas?.map((f: any) => f.id) || [],
       status: kamar.status,
     });
     setIsModalOpen(true);
@@ -115,7 +130,7 @@ export function KamarList() {
       nomor_kamar: '',
       tipe: '',
       harga: '',
-      fasilitas: '',
+      fasilitas_ids: [],
       status: 'Kosong',
     });
   };
@@ -196,6 +211,7 @@ export function KamarList() {
                 <TableHead className="font-bold text-navy">No. Kamar</TableHead>
                 <TableHead className="font-bold text-navy">Tipe</TableHead>
                 <TableHead className="font-bold text-navy">Harga/Bulan</TableHead>
+                <TableHead className="font-bold text-navy">Fasilitas</TableHead>
                 <TableHead className="font-bold text-navy">Status</TableHead>
                 <TableHead className="text-right font-bold text-navy">Aksi</TableHead>
               </TableRow>
@@ -217,6 +233,17 @@ export function KamarList() {
                     <TableCell className="font-bold text-navy">{kamar.nomor_kamar}</TableCell>
                     <TableCell className="text-slate-600 font-medium">{kamar.tipe}</TableCell>
                     <TableCell className="font-semibold text-slate-700">Rp {Number(kamar.harga).toLocaleString('id-ID')}</TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {kamar.fasilitas && kamar.fasilitas.length > 0 ? (
+                          kamar.fasilitas.map((f: any) => (
+                            <Badge key={f.id} variant="info" className="text-[10px] px-1.5 py-0">{f.nama_fasilitas}</Badge>
+                          ))
+                        ) : (
+                          <span className="text-xs text-slate-400">-</span>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <Badge variant={kamar.status === 'Terisi' ? 'success' : kamar.status === 'Kosong' ? 'default' : 'warning'}>
                         {kamar.status}
@@ -297,6 +324,28 @@ export function KamarList() {
                 onChange={(e) => setFormData({ ...formData, harga: e.target.value })}
                 required
               />
+            </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <label className="text-sm font-bold text-navy">Fasilitas Kamar</label>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                {fasilitasMaster?.map((f: any) => (
+                  <label key={f.id} className="flex items-center space-x-2 text-sm text-slate-700 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="rounded border-slate-300 text-primary focus:ring-primary"
+                      checked={formData.fasilitas_ids.includes(f.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData({ ...formData, fasilitas_ids: [...formData.fasilitas_ids, f.id] });
+                        } else {
+                          setFormData({ ...formData, fasilitas_ids: formData.fasilitas_ids.filter(id => id !== f.id) });
+                        }
+                      }}
+                    />
+                    <span>{f.nama_fasilitas}</span>
+                  </label>
+                ))}
+              </div>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-navy">Status</label>
