@@ -149,10 +149,11 @@ class DashboardController extends Controller
         // EXPENSE BREAKDOWN (BULAN INI)
         // ==============================
 
-        $expenseBreakdown = Pengeluaran::whereMonth('tanggal', $bulanIni)
+        $expenseBreakdown = Pengeluaran::join('kategori_pengeluarans', 'pengeluarans.kategori_id', '=', 'kategori_pengeluarans.id')
+            ->whereMonth('tanggal', $bulanIni)
             ->whereYear('tanggal', $tahunIni)
-            ->selectRaw('kategori as name, SUM(nominal) as value')
-            ->groupBy('kategori')
+            ->selectRaw('kategori_pengeluarans.nama_kategori as name, SUM(pengeluarans.nominal) as value')
+            ->groupBy('kategori_pengeluarans.nama_kategori')
             ->get();
             
         if ($expenseBreakdown->isEmpty()) {
