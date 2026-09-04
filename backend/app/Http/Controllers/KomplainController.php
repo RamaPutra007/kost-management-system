@@ -78,6 +78,15 @@ class KomplainController extends Controller
 
         $komplain->update($validated);
 
+        if ($komplain->penghuni && $komplain->penghuni->user_id) {
+            Notification::create([
+                'user_id' => $komplain->penghuni->user_id,
+                'title' => 'Pembaruan Komplain',
+                'message' => 'Admin telah merespon komplain Anda. Status: ' . $komplain->status . '.',
+                'is_read' => false,
+            ]);
+        }
+
         return response()->json(['message' => 'Status komplain berhasil diubah', 'data' => $komplain]);
     }
 }
