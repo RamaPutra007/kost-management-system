@@ -34,6 +34,7 @@ export function KontrakList() {
     penghuni_id: '',
     tanggal_mulai: '',
     tanggal_selesai: '',
+    durasi: '1',
     harga_kesepakatan: '',
     deposit: '',
   });
@@ -141,6 +142,7 @@ export function KontrakList() {
       penghuni_id: kontrak.penghuni_id,
       tanggal_mulai: kontrak.tanggal_mulai.split('T')[0], // format to YYYY-MM-DD if needed
       tanggal_selesai: kontrak.tanggal_selesai.split('T')[0],
+      durasi: 'custom',
       harga_kesepakatan: kontrak.harga_kesepakatan,
       deposit: kontrak.deposit || '',
     });
@@ -157,8 +159,13 @@ export function KontrakList() {
     setFormData({
       kamar_id: kamars?.[0]?.id || '',
       penghuni_id: penghunis?.[0]?.id || '',
-      tanggal_mulai: '',
-      tanggal_selesai: '',
+      tanggal_mulai: new Date().toISOString().split('T')[0],
+      tanggal_selesai: (() => {
+        const d = new Date();
+        d.setMonth(d.getMonth() + 1);
+        return d.toISOString().split('T')[0];
+      })(),
+      durasi: '1',
       harga_kesepakatan: kamars?.[0]?.harga || '',
       deposit: '',
     });
@@ -361,13 +368,44 @@ export function KontrakList() {
               ))}
             </Select>
           </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-bold text-navy">Durasi Sewa</label>
+            <Select
+              value={formData.durasi}
+              onChange={(e) => {
+                const durasi = e.target.value;
+                let tanggal_selesai = formData.tanggal_selesai;
+                if (durasi !== 'custom' && formData.tanggal_mulai) {
+                  const d = new Date(formData.tanggal_mulai);
+                  d.setMonth(d.getMonth() + parseInt(durasi));
+                  tanggal_selesai = d.toISOString().split('T')[0];
+                }
+                setFormData({ ...formData, durasi, tanggal_selesai });
+              }}
+            >
+              <option value="1">1 Bulan</option>
+              <option value="3">3 Bulan</option>
+              <option value="6">6 Bulan</option>
+              <option value="12">1 Tahun</option>
+              <option value="custom">Kustom (Pilih Tanggal Selesai Manual)</option>
+            </Select>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-navy">Tanggal Mulai</label>
               <Input
                 type="date"
                 value={formData.tanggal_mulai}
-                onChange={(e) => setFormData({ ...formData, tanggal_mulai: e.target.value })}
+                onChange={(e) => {
+                  const tanggal_mulai = e.target.value;
+                  let tanggal_selesai = formData.tanggal_selesai;
+                  if (formData.durasi !== 'custom' && tanggal_mulai) {
+                    const d = new Date(tanggal_mulai);
+                    d.setMonth(d.getMonth() + parseInt(formData.durasi));
+                    tanggal_selesai = d.toISOString().split('T')[0];
+                  }
+                  setFormData({ ...formData, tanggal_mulai, tanggal_selesai });
+                }}
                 required
               />
             </div>
@@ -376,8 +414,9 @@ export function KontrakList() {
               <Input
                 type="date"
                 value={formData.tanggal_selesai}
-                onChange={(e) => setFormData({ ...formData, tanggal_selesai: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, tanggal_selesai: e.target.value, durasi: 'custom' })}
                 required
+                disabled={formData.durasi !== 'custom'}
               />
             </div>
           </div>
