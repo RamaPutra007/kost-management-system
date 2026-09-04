@@ -1,23 +1,74 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend 
 } from 'recharts';
-import { Download, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { Download, TrendingUp, TrendingDown, DollarSign, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { formatRupiah } from '@/lib/utils';
+import { Spinner } from '@/components/ui/Spinner';
+import { Alert } from '@/components/ui/Alert';
 
-const data = [
-  { name: 'Jan', Pendapatan: 4000, Pengeluaran: 2400 },
-  { name: 'Feb', Pendapatan: 3000, Pengeluaran: 1398 },
-  { name: 'Mar', Pendapatan: 2000, Pengeluaran: 9800 },
-  { name: 'Apr', Pendapatan: 2780, Pengeluaran: 3908 },
-  { name: 'Mei', Pendapatan: 1890, Pengeluaran: 4800 },
-  { name: 'Jun', Pendapatan: 2390, Pengeluaran: 3800 },
-  { name: 'Jul', Pendapatan: 3490, Pengeluaran: 4300 },
-];
+// Helper for IDR formatting
+const formatIDR = (value: number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(value).replace('Rp', 'Rp ');
+};
 
 export function Laporan() {
+  const { data: dashboardData, isLoading, error } = useQuery({
+    queryKey: ['dashboard-overview'],
+    queryFn: async () => {
+      try {
+        const res = await api.get('/dashboard/overview');
+        return res.data.overview;
+      } catch (e) {
+        throw new Error('Gagal memuat data laporan');
+      }
+    },
+    retry: 1
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[80vh] w-full flex-col items-center justify-center space-y-4">
+        <Spinner className="w-12 h-12 text-primary" />
+        <p className="text-slate-500 font-medium animate-pulse">Memuat data laporan...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <Alert variant="danger" className="max-w-2xl">
+          <div className="flex items-center space-x-3">
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            <div>
+              <h4 className="font-bold">Gagal Memuat Laporan</h4>
+              <p className="text-sm opacity-90">Terjadi kesalahan saat mengambil data dari server. Silakan coba lagi nanti.</p>
+            </div>
+          </div>
+        </Alert>
+      </div>
+    );
+  }
+
+  const chartData = dashboardData?.chart_data?.map((d: any) => ({
+    name: d.name,
+    Pendapatan: d.pendapatan,
+    Pengeluaran: d.pengeluaran,
+  })) || [];
+
+  const totalPendapatan = dashboardData?.pendapatan_bulan_ini || 0;
+  const totalPengeluaran = dashboardData?.pengeluaran_bulan_ini || 0;
+  const labaBersih = dashboardData?.laba_bersih || 0;
+
   return (
     <div className="flex-1 p-4 sm:p-6 max-w-7xl mx-auto w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
@@ -44,7 +95,7 @@ export function Laporan() {
                     <th style="border: 1px solid black; background-color: #f1f5f9; text-align: right;">Pengeluaran (Rp)</th>
                     <th style="border: 1px solid black; background-color: #f1f5f9; text-align: right;">Laba Bersih (Rp)</th>
                   </tr>
-                  ${data.map(e => `
+                  ${chartData.map((e: any) => `
                     <tr>
                       <td style="border: 1px solid black; text-align: left;">${e.name}</td>
                       <td style="border: 1px solid black; text-align: right;">${e.Pendapatan.toLocaleString('id-ID')}</td>
@@ -90,46 +141,34 @@ export function Laporan() {
         <div className="bg-white p-6 print:p-2 rounded-2xl border border-slate-200 print:border-0 shadow-sm print:shadow-none relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-slate-500">Total Pendapatan</h3>
+            <h3 className="font-bold text-slate-500">Pendapatan (Bulan Ini)</h3>
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-navy print:text-xl">Rp 19.550.000</p>
-          <div className="flex items-center space-x-2 mt-2">
-            <Badge variant="success">+12%</Badge>
-            <span className="text-sm text-slate-400 font-medium">vs bulan lalu</span>
-          </div>
+          <p className="text-3xl font-black text-navy print:text-xl">{formatIDR(totalPendapatan)}</p>
         </div>
 
         <div className="bg-white p-6 print:p-2 rounded-2xl border border-slate-200 print:border-0 shadow-sm print:shadow-none relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-slate-500">Total Pengeluaran</h3>
+            <h3 className="font-bold text-slate-500">Pengeluaran (Bulan Ini)</h3>
             <div className="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
               <TrendingDown className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-navy print:text-xl">Rp 3.400.000</p>
-          <div className="flex items-center space-x-2 mt-2">
-            <Badge variant="danger">+5%</Badge>
-            <span className="text-sm text-slate-400 font-medium">vs bulan lalu</span>
-          </div>
+          <p className="text-3xl font-black text-navy print:text-xl">{formatIDR(totalPengeluaran)}</p>
         </div>
 
         <div className="bg-white p-6 print:p-2 rounded-2xl border border-slate-200 print:border-0 shadow-sm print:shadow-none relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-slate-500">Laba Bersih</h3>
+            <h3 className="font-bold text-slate-500">Laba Bersih (Bulan Ini)</h3>
             <div className="w-10 h-10 rounded-xl bg-primary-light text-primary flex items-center justify-center">
               <DollarSign className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-navy print:text-xl">Rp 16.150.000</p>
-          <div className="flex items-center space-x-2 mt-2">
-            <Badge variant="info">+15%</Badge>
-            <span className="text-sm text-slate-400 font-medium">vs bulan lalu</span>
-          </div>
+          <p className="text-3xl font-black text-navy print:text-xl">{formatIDR(labaBersih)}</p>
         </div>
       </div>
 
@@ -138,15 +177,18 @@ export function Laporan() {
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={data}
+              data={chartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748B', fontSize: 12, fontWeight: 500}} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748B', fontSize: 12, fontWeight: 500}} dx={-10} />
+              <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748B', fontSize: 12, fontWeight: 500}} dx={-10} 
+                     tickFormatter={(value) => `Rp ${value >= 1000000 ? (value / 1000000) + 'jt' : value >= 1000 ? (value / 1000) + 'k' : value}`}
+              />
               <RechartsTooltip 
                 cursor={{fill: '#F1F5F9'}} 
                 contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
+                formatter={(value: any) => formatIDR(Number(value) || 0)}
               />
               <Legend iconType="circle" wrapperStyle={{paddingTop: '20px'}} />
               <Bar dataKey="Pendapatan" fill="#2563EB" radius={[4, 4, 0, 0]} maxBarSize={40} />
