@@ -124,19 +124,39 @@ export function HeroSection() {
               Platform all-in-one cerdas untuk mengelola data kamar, penghuni, kontrak sewa, tagihan, pembayaran otomatis, hingga pembukuan keuangan kost Anda dalam satu layar.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-6 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-6 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300 mb-8">
               <Link to="/login">
                 <Button size="xl" variant="primary" className="w-full sm:w-auto rounded-full shadow-xl shadow-primary/30 group">
-                  Mulai Sekarang Gratis
+                  Coba Demo Sekarang
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               <a href="#tampilan">
-                <Button size="xl" variant="outline" className="w-full sm:w-auto rounded-full border-slate-300 text-slate-700 hover:bg-slate-50 group">
+                <Button size="xl" variant="outline" className="w-full sm:w-auto rounded-full border-slate-300 text-slate-700 hover:bg-slate-50 group bg-white/50 backdrop-blur-sm">
                   <PlayCircle className="mr-2 w-5 h-5 text-primary group-hover:scale-110 transition-transform" />
                   Lihat Tampilan
                 </Button>
               </a>
+            </div>
+
+            {/* Demo Credentials Info */}
+            <div className="bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200/60 p-4 inline-block shadow-sm animate-in fade-in slide-in-from-bottom-12 duration-700 delay-500 w-full sm:w-auto text-left">
+              <p className="text-sm font-semibold text-slate-700 mb-3 flex items-center">
+                <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                Gunakan akun demo berikut untuk mencoba:
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="bg-white rounded-lg p-3 border border-slate-100 shadow-sm flex-1">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">👑 Admin / Owner</p>
+                  <p className="text-sm font-medium text-navy">admin@gmail.com</p>
+                  <p className="text-xs text-slate-500">Pass: password</p>
+                </div>
+                <div className="bg-white rounded-lg p-3 border border-slate-100 shadow-sm flex-1">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">👤 Penghuni</p>
+                  <p className="text-sm font-medium text-navy">penghuni@gmail.com</p>
+                  <p className="text-xs text-slate-500">Pass: password</p>
+                </div>
+              </div>
             </div>
           </div>
 

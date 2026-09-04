@@ -22,10 +22,11 @@ export function CtaFooterSection() {
           </p>
           <Link to="/login">
             <Button size="xl" variant="secondary" className="rounded-full shadow-2xl group text-primary font-bold">
-              Mulai Sekarang — Gratis
+              Coba Demo Sekarang
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
+          <p className="mt-6 text-sm text-blue-200">Gunakan email: <strong>admin@gmail.com</strong> (Pass: password)</p>
         </div>
       </section>
 
