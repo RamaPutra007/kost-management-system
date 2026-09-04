@@ -68,13 +68,13 @@ export function AdminDashboard() {
     );
   }
 
-  // Use real data if available, fallback to mock data based on prompt requirements
-  const totalKamar = data?.total_kamar || 120;
-  const kamarTerisi = data?.kamar_terisi || 115;
-  const penghuniAktif = data?.total_penghuni || 118;
-  const tagihanBelumDibayar = data?.tagihan_jatuh_tempo || 15;
-  const pembayaranMenunggu = data?.pembayaran_pending || 8;
-  const kontrakAkanBerakhir = data?.kontrak_akan_berakhir || 5;
+  // Use real data from API
+  const totalKamar = data?.total_kamar || 0;
+  const kamarTerisi = data?.kamar_terisi || 0;
+  const penghuniAktif = data?.total_penghuni || 0;
+  const tagihanBelumDibayar = data?.tagihan_jatuh_tempo || 0;
+  const pembayaranMenunggu = data?.pembayaran_pending || 0;
+  const kontrakAkanBerakhir = data?.kontrak_akan_berakhir || 0;
 
   const summaryCards = [
     { label: 'Total Kamar', value: totalKamar, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-100' },
@@ -130,11 +130,7 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent className="p-0">
              <div className="divide-y divide-slate-100">
-               {[
-                 { name: 'Andi Wijaya', room: 'Kamar 101', amount: 1500000, date: 'Hari ini, 09:30' },
-                 { name: 'Budi Santoso', room: 'Kamar 105', amount: 1750000, date: 'Kemarin, 14:15' },
-                 { name: 'Citra Kirana', room: 'Kamar 202', amount: 2000000, date: 'Kemarin, 11:20' }
-               ].map((item, i) => (
+               {data?.pending_payments_list?.length > 0 ? data.pending_payments_list.map((item: any, i: number) => (
                  <div key={i} className="flex justify-between items-center p-4 hover:bg-slate-50 transition-colors">
                    <div>
                      <p className="font-bold text-navy text-sm">{item.name}</p>
@@ -147,10 +143,9 @@ export function AdminDashboard() {
                      </button>
                    </div>
                  </div>
-               ))}
-               <div className="p-3 text-center bg-slate-50 rounded-b-xl">
-                 <button className="text-sm font-bold text-primary hover:text-blue-700">Lihat Semua (8)</button>
-               </div>
+               )) : (
+                 <div className="p-6 text-center text-sm text-slate-500">Tidak ada pembayaran menunggu verifikasi.</div>
+               )}
              </div>
           </CardContent>
         </Card>
@@ -167,10 +162,7 @@ export function AdminDashboard() {
             </CardHeader>
             <CardContent className="p-0">
                <div className="divide-y divide-slate-100">
-                 {[
-                   { name: 'Deni Setiawan', room: 'Kamar 110', due: 'Terlambat 3 Hari' },
-                   { name: 'Eka Putri', room: 'Kamar 112', due: 'Terlambat 1 Hari' }
-                 ].map((item, i) => (
+                 {data?.unpaid_bills_list?.length > 0 ? data.unpaid_bills_list.map((item: any, i: number) => (
                    <div key={i} className="flex justify-between items-center p-4">
                      <div>
                        <p className="font-bold text-navy text-sm">{item.name}</p>
@@ -180,7 +172,9 @@ export function AdminDashboard() {
                        {item.due}
                      </span>
                    </div>
-                 ))}
+                 )) : (
+                   <div className="p-4 text-center text-sm text-slate-500">Semua tagihan sudah dibayar atau belum jatuh tempo.</div>
+                 )}
                </div>
             </CardContent>
           </Card>
@@ -195,20 +189,19 @@ export function AdminDashboard() {
             </CardHeader>
             <CardContent className="p-0">
                <div className="divide-y divide-slate-100">
-                 {[
-                   { name: 'Fajar Rahman', room: 'Kamar 201', expire: 'H-5 (10 Sep 2026)' },
-                   { name: 'Gita Savitri', room: 'Kamar 205', expire: 'H-7 (12 Sep 2026)' }
-                 ].map((item, i) => (
+                 {data?.expiring_contracts_list?.length > 0 ? data.expiring_contracts_list.map((item: any, i: number) => (
                    <div key={i} className="flex justify-between items-center p-4">
                      <div>
                        <p className="font-bold text-navy text-sm">{item.name}</p>
                        <p className="text-xs text-slate-500">{item.room}</p>
                      </div>
-                     <span className="text-xs font-bold bg-warning/10 text-warning px-2 py-1 rounded-full">
+                     <span className="text-xs font-bold bg-warning/10 text-warning px-2 py-1 rounded-full text-right max-w-[120px] line-clamp-2 leading-tight">
                        {item.expire}
                      </span>
                    </div>
-                 ))}
+                 )) : (
+                   <div className="p-4 text-center text-sm text-slate-500">Tidak ada kontrak yang segera berakhir.</div>
+                 )}
                </div>
             </CardContent>
           </Card>
@@ -224,14 +217,10 @@ export function AdminDashboard() {
           </CardHeader>
           <CardContent className="p-0">
              <div className="divide-y divide-slate-100">
-               {[
-                 { name: 'Hadi Surya', room: 'Kamar 301', status: 'Aktif', date: 'Masuk 1 Sep' },
-                 { name: 'Irfan Hakim', room: 'Kamar 302', status: 'Aktif', date: 'Masuk 28 Agu' },
-                 { name: 'Joko Widodo', room: 'Kamar 305', status: 'Booking', date: 'Rencana Masuk 10 Sep' }
-               ].map((item, i) => (
+               {data?.recent_tenants_list?.length > 0 ? data.recent_tenants_list.map((item: any, i: number) => (
                  <div key={i} className="flex items-center p-4">
                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-navy font-bold mr-3 shrink-0">
-                     {item.name.charAt(0)}
+                     {item.name.charAt(0).toUpperCase()}
                    </div>
                    <div className="flex-1">
                      <p className="font-bold text-navy text-sm">{item.name}</p>
@@ -243,10 +232,9 @@ export function AdminDashboard() {
                      </span>
                    </div>
                  </div>
-               ))}
-               <div className="p-3 text-center bg-slate-50 rounded-b-xl border-t border-slate-100 mt-2">
-                 <button className="text-sm font-bold text-primary hover:text-blue-700">Lihat Daftar Penghuni</button>
-               </div>
+               )) : (
+                 <div className="p-6 text-center text-sm text-slate-500">Belum ada penghuni terbaru.</div>
+               )}
              </div>
           </CardContent>
         </Card>

@@ -195,6 +195,80 @@ class DashboardController extends Controller
             });
 
         // ==============================
+        // ADMIN SPECIFIC DATA
+        // ==============================
+
+        $pembayaranPendingCount = Tagihan::where('status', 'Pending')->count();
+
+        $pendingPayments = Tagihan::with(['penghuni.user', 'penghuni.kamar'])
+            ->where('status', 'Pending')
+            ->orderBy('updated_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($t) {
+                return [
+                    'name' => $t->penghuni->user->name ?? 'Unknown',
+                    'room' => 'Kamar ' . ($t->penghuni->kamar->nomor_kamar ?? '-'),
+                    'amount' => $t->total_tagihan,
+                    'date' => $t->updated_at->diffForHumans(),
+                ];
+            });
+
+        $unpaidBills = Tagihan::with(['penghuni.user', 'penghuni.kamar'])
+            ->whereIn('status', ['Pending', 'Overdue'])
+            ->whereDate('jatuh_tempo', '<', Carbon::now())
+            ->orderBy('jatuh_tempo', 'asc')
+            ->take(5)
+            ->get()
+            ->map(function ($t) {
+                $days = Carbon::now()->diffInDays($t->jatuh_tempo);
+                return [
+                    'name' => $t->penghuni->user->name ?? 'Unknown',
+                    'room' => 'Kamar ' . ($t->penghuni->kamar->nomor_kamar ?? '-'),
+                    'due' => 'Terlambat ' . $days . ' Hari',
+                ];
+            });
+
+        $expiringContracts = \App\Models\KontrakSewa::with(['penghuni.user', 'penghuni.kamar'])
+            ->where('status', 'Aktif')
+            ->whereDate('tanggal_selesai', '<=', Carbon::now()->addDays(30))
+            ->orderBy('tanggal_selesai', 'asc')
+            ->take(5)
+            ->get()
+            ->map(function ($c) {
+                $days = Carbon::now()->diffInDays($c->tanggal_selesai, false);
+                $daysText = $days > 0 ? "H-{$days}" : "Hari Ini";
+                return [
+                    'name' => $c->penghuni->user->name ?? 'Unknown',
+                    'room' => 'Kamar ' . ($c->penghuni->kamar->nomor_kamar ?? '-'),
+                    'expire' => $daysText . ' (' . Carbon::parse($c->tanggal_selesai)->translatedFormat('d M Y') . ')',
+                ];
+            });
+
+        $recentTenants = Penghuni::with(['user', 'kamar', 'kontrakSewas' => function($q){
+                $q->orderBy('tanggal_mulai', 'desc');
+            }])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($p) {
+                $status = 'Tidak Aktif';
+                $dateText = '-';
+                if ($p->kontrakSewas->isNotEmpty()) {
+                    $kontrak = $p->kontrakSewas->first();
+                    $status = $kontrak->status;
+                    $dateText = 'Masuk ' . Carbon::parse($kontrak->tanggal_mulai)->translatedFormat('d M Y');
+                }
+                return [
+                    'name' => $p->user->name ?? 'Unknown',
+                    'room' => 'Kamar ' . ($p->kamar->nomor_kamar ?? '-'),
+                    'status' => $status,
+                    'date' => $dateText,
+                ];
+            });
+
+
+        // ==============================
         // RESPONSE
         // ==============================
 
@@ -213,6 +287,12 @@ class DashboardController extends Controller
                 'expense_breakdown' => $expenseBreakdown,
                 'payment_status' => $paymentStatusData,
                 'recent_bills' => $recentBills,
+                // Admin specific
+                'pembayaran_pending' => $pembayaranPendingCount,
+                'pending_payments_list' => $pendingPayments,
+                'unpaid_bills_list' => $unpaidBills,
+                'expiring_contracts_list' => $expiringContracts,
+                'recent_tenants_list' => $recentTenants,
             ],
         ]);
     }
