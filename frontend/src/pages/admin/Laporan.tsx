@@ -21,7 +21,7 @@ export function Laporan() {
   return (
     <div className="flex-1 p-4 sm:p-6 max-w-7xl mx-auto w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
-        <div>
+        <div className="print:hidden">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-navy">Laporan Keuangan</h1>
           <p className="text-slate-500 mt-1">Ringkasan performa dan mutasi kas properti Anda.</p>
         </div>
@@ -32,8 +32,10 @@ export function Laporan() {
           </Button>
           <Button variant="outline" className="flex items-center space-x-2 print:hidden border-green-200 text-green-700 hover:bg-green-50" onClick={() => {
             const csvContent = "data:text/csv;charset=utf-8," 
-              + "Bulan,Pendapatan,Pengeluaran\n"
-              + data.map(e => `${e.name},${e.Pendapatan},${e.Pengeluaran}`).join("\n");
+              + "LAPORAN KEUANGAN KOSTKU\n"
+              + `Tanggal Cetak:,${new Date().toLocaleDateString('id-ID')}\n\n`
+              + "Bulan,Pendapatan (Rp),Pengeluaran (Rp),Laba Bersih (Rp)\n"
+              + data.map(e => `${e.name},${e.Pendapatan},${e.Pengeluaran},${e.Pendapatan - e.Pengeluaran}`).join("\n");
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
@@ -51,14 +53,21 @@ export function Laporan() {
       <style type="text/css">
         {`
           @media print {
-            @page { margin: 0; size: landscape; }
-            body { padding: 2cm; -webkit-print-color-adjust: exact; }
+            @page { margin: 1cm; size: landscape; }
+            body { padding: 0; -webkit-print-color-adjust: exact; }
           }
         `}
       </style>
 
+      {/* Print Only Header */}
+      <div className="hidden print:flex flex-col items-center mb-8 border-b-2 border-slate-800 pb-4">
+        <h1 className="text-3xl font-black text-navy uppercase tracking-widest">KOSTKU</h1>
+        <h2 className="text-xl font-bold text-slate-700 mt-1">LAPORAN KEUANGAN</h2>
+        <p className="text-sm text-slate-500 mt-1">Dicetak pada: {new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+        <div className="bg-white p-6 print:p-2 rounded-2xl border border-slate-200 print:border-0 shadow-sm print:shadow-none relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-slate-500">Total Pendapatan</h3>
@@ -66,14 +75,14 @@ export function Laporan() {
               <TrendingUp className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-navy">Rp 19.550.000</p>
+          <p className="text-3xl font-black text-navy print:text-xl">Rp 19.550.000</p>
           <div className="flex items-center space-x-2 mt-2">
             <Badge variant="success">+12%</Badge>
             <span className="text-sm text-slate-400 font-medium">vs bulan lalu</span>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+        <div className="bg-white p-6 print:p-2 rounded-2xl border border-slate-200 print:border-0 shadow-sm print:shadow-none relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-slate-500">Total Pengeluaran</h3>
@@ -81,14 +90,14 @@ export function Laporan() {
               <TrendingDown className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-navy">Rp 3.400.000</p>
+          <p className="text-3xl font-black text-navy print:text-xl">Rp 3.400.000</p>
           <div className="flex items-center space-x-2 mt-2">
             <Badge variant="danger">+5%</Badge>
             <span className="text-sm text-slate-400 font-medium">vs bulan lalu</span>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
+        <div className="bg-white p-6 print:p-2 rounded-2xl border border-slate-200 print:border-0 shadow-sm print:shadow-none relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110" />
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-slate-500">Laba Bersih</h3>
@@ -96,7 +105,7 @@ export function Laporan() {
               <DollarSign className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-black text-navy">Rp 16.150.000</p>
+          <p className="text-3xl font-black text-navy print:text-xl">Rp 16.150.000</p>
           <div className="flex items-center space-x-2 mt-2">
             <Badge variant="info">+15%</Badge>
             <span className="text-sm text-slate-400 font-medium">vs bulan lalu</span>
@@ -104,7 +113,7 @@ export function Laporan() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-8">
+      <div className="bg-white p-6 print:p-0 rounded-2xl border border-slate-200 print:border-0 shadow-sm print:shadow-none mb-8">
         <h3 className="text-lg font-bold text-navy mb-6">Arus Kas (6 Bulan Terakhir)</h3>
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
