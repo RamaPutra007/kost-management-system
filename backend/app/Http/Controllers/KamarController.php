@@ -31,7 +31,7 @@ class KamarController extends Controller
             'status' => 'sometimes|in:Kosong,Terisi,Perbaikan',
         ]);
 
-        $kamar = Kamar::create($validated);
+        $kamar = Kamar::create(collect($validated)->except('fasilitas_ids')->toArray());
         
         if ($request->has('fasilitas_ids')) {
             $kamar->fasilitas()->sync($request->fasilitas_ids);
@@ -60,7 +60,7 @@ class KamarController extends Controller
             'status' => 'sometimes|in:Kosong,Terisi,Perbaikan',
         ]);
 
-        $kamar->update($validated);
+        $kamar->update(collect($validated)->except('fasilitas_ids')->toArray());
         
         if ($request->has('fasilitas_ids')) {
             $kamar->fasilitas()->sync($request->fasilitas_ids);

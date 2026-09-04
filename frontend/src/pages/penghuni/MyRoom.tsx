@@ -58,7 +58,11 @@ export function MyRoom() {
               </div>
               <div className="col-span-2">
                 <p className="text-sm text-gray-500">Fasilitas Kamar</p>
-                <p className="font-medium">{activeKontrak.kamar?.fasilitas || '-'}</p>
+                <p className="font-medium">
+                  {Array.isArray(activeKontrak.kamar?.fasilitas) 
+                    ? (activeKontrak.kamar.fasilitas.map((f: any) => f.nama_fasilitas).join(', ') || '-') 
+                    : (activeKontrak.kamar?.fasilitas || '-')}
+                </p>
               </div>
             </div>
           </CardContent>

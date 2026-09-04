@@ -14,8 +14,9 @@ import {
   Wallet,
   Settings,
   PieChart,
-  Bell,
-  User
+  User,
+  MessageSquare,
+  Megaphone
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -51,6 +52,8 @@ export function Sidebar({
           { name: 'Tagihan', path: '/tagihan', icon: CreditCard },
           { name: 'Pembayaran', path: '/pembayaran', icon: Wallet },
           { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
+          { name: 'Pengumuman', path: '/pengumuman', icon: Megaphone },
+          { name: 'Layanan & Komplain', path: '/komplain', icon: MessageSquare },
           { name: 'Laporan', path: '/laporan', icon: FileText },
           { name: 'Pengguna', path: '/pengguna', icon: Users },
         ];
@@ -63,6 +66,8 @@ export function Sidebar({
           { name: 'Tagihan', path: '/tagihan', icon: CreditCard },
           { name: 'Pembayaran', path: '/pembayaran', icon: Wallet },
           { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
+          { name: 'Pengumuman', path: '/pengumuman', icon: Megaphone },
+          { name: 'Layanan & Komplain', path: '/komplain', icon: MessageSquare },
           { name: 'Laporan', path: '/laporan', icon: FileText },
         ];
       case 'Penghuni':
@@ -71,7 +76,7 @@ export function Sidebar({
           { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
           { name: 'Tagihan', path: '/my-bills', icon: CreditCard },
           { name: 'Pembayaran', path: '/my-payments', icon: Wallet },
-          { name: 'Kontrak', path: '/my-contract', icon: FileText },
+          { name: 'Layanan & Komplain', path: '/my-complaints', icon: MessageSquare },
         ];
     }
   };

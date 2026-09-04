@@ -10,7 +10,9 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Pagination } from '@/components/ui/Pagination';
 import { toast } from 'react-hot-toast';
+import { showAlert } from '@/lib/utils';
 import { Search, Filter, Plus, Calendar, Edit2, Trash2, Receipt, AlertCircle } from 'lucide-react';
+import { formatRupiah } from '@/lib/utils';
 
 export function PengeluaranList() {
   const queryClient = useQueryClient();
@@ -67,12 +69,12 @@ export function PengeluaranList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pengeluaran'] });
-      toast.success(editingId ? 'Catatan pengeluaran berhasil diperbarui' : 'Pengeluaran baru berhasil dicatat');
+      showAlert.success(editingId ? 'Catatan pengeluaran berhasil diperbarui' : 'Pengeluaran baru berhasil dicatat');
       setIsModalOpen(false);
       resetForm();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Terjadi kesalahan saat menyimpan data');
+      showAlert.error(err.response?.data?.message || 'Terjadi kesalahan saat menyimpan data');
     }
   });
 
@@ -82,12 +84,12 @@ export function PengeluaranList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pengeluaran'] });
-      toast.success('Catatan pengeluaran berhasil dihapus');
+      showAlert.success('Catatan pengeluaran berhasil dihapus');
       setIsDeleteModalOpen(false);
       setSelectedItem(null);
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Terjadi kesalahan saat menghapus');
+      showAlert.error(err.response?.data?.message || 'Terjadi kesalahan saat menghapus');
     }
   });
 
@@ -233,7 +235,7 @@ export function PengeluaranList() {
                       <span className="text-sm text-slate-600 line-clamp-2 max-w-xs">{item.keterangan || '-'}</span>
                     </TableCell>
                     <TableCell className="font-black text-danger">
-                      - Rp {Number(item.nominal).toLocaleString('id-ID')}
+                      - Rp {formatRupiah(item.nominal)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -308,10 +310,13 @@ export function PengeluaranList() {
             <div className="space-y-1.5 sm:col-span-2">
               <label className="text-sm font-bold text-navy">Nominal Keluar (Rp)</label>
               <Input
-                type="number"
-                placeholder="Cth: 250000"
-                value={formData.nominal}
-                onChange={(e) => setFormData({ ...formData, nominal: e.target.value })}
+                type="text"
+                placeholder="250.000"
+                value={formData.nominal ? formatRupiah(formData.nominal) : ''}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  setFormData({ ...formData, nominal: val });
+                }}
                 required
               />
             </div>
@@ -344,7 +349,7 @@ export function PengeluaranList() {
           <div className="p-4 bg-red-50 text-red-800 rounded-xl border border-red-100 flex gap-3 items-start">
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
             <p className="text-sm font-medium">
-              Apakah Anda yakin ingin menghapus catatan pengeluaran <strong className="font-black text-danger">{selectedItem?.kategori?.nama}</strong> senilai <strong className="font-black">Rp {Number(selectedItem?.nominal).toLocaleString('id-ID')}</strong>? Tindakan ini akan memengaruhi laporan keuangan bulanan.
+              Apakah Anda yakin ingin menghapus catatan pengeluaran <strong className="font-black text-danger">{selectedItem?.kategori?.nama}</strong> senilai <strong className="font-black">Rp {formatRupiah(selectedItem?.nominal || 0)}</strong>? Tindakan ini akan memengaruhi laporan keuangan bulanan.
             </p>
           </div>
           <div className="flex justify-end space-x-3 pt-2">

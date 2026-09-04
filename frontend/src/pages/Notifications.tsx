@@ -1,61 +1,62 @@
 import React from 'react';
-import { Bell, CheckCircle2, AlertTriangle, Info, Clock } from 'lucide-react';
+import { Bell, CheckCircle2, AlertTriangle, Info, Clock, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-
-// Dummy data to make the notification feature functional and visually complete
-const DUMMY_NOTIFICATIONS = [
-  {
-    id: 1,
-    title: 'Pembayaran Diterima',
-    message: 'Pembayaran tagihan kos bulan September 2026 telah diverifikasi.',
-    time: '2 jam yang lalu',
-    type: 'success',
-    isRead: false,
-  },
-  {
-    id: 2,
-    title: 'Peringatan Tagihan',
-    message: 'Tagihan listrik bulan Agustus 2026 belum dibayar.',
-    time: '5 jam yang lalu',
-    type: 'warning',
-    isRead: false,
-  },
-  {
-    id: 3,
-    title: 'Info Pemeliharaan',
-    message: 'Akan ada pemadaman air sementara besok pukul 10:00 - 14:00.',
-    time: '1 hari yang lalu',
-    type: 'info',
-    isRead: true,
-  },
-  {
-    id: 4,
-    title: 'Kontrak Baru Ditambahkan',
-    message: 'Anda baru saja membuat kontrak baru untuk kamar B-02.',
-    time: '3 hari yang lalu',
-    type: 'success',
-    isRead: true,
-  }
-];
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+import { toast } from 'react-hot-toast';
+import { showAlert } from '@/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
+import { id as localeId } from 'date-fns/locale';
 
 export function Notifications() {
-  const [notifications, setNotifications] = React.useState(DUMMY_NOTIFICATIONS);
+  const queryClient = useQueryClient();
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const { data: notifications = [], isLoading } = useQuery({
+    queryKey: ['notifications'],
+    queryFn: async () => {
+      const res = await api.get('/notifications');
+      return res.data;
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await api.delete(`/notifications/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      showAlert.success('Notifikasi berhasil dihapus');
+    },
+    onError: () => {
+      showAlert.error('Gagal menghapus notifikasi');
+    }
+  });
+
+  const readMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await api.put(`/notifications/${id}/read`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    }
+  });
+
+  const unreadCount = notifications.filter((n: any) => !n.is_read).length;
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    const unreadNotifs = notifications.filter((n: any) => !n.is_read);
+    unreadNotifs.forEach((n: any) => readMutation.mutate(n.id));
   };
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case 'success':
-        return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
-      case 'warning':
-        return <AlertTriangle className="w-5 h-5 text-amber-500" />;
-      default:
-        return <Info className="w-5 h-5 text-blue-500" />;
+  const getIcon = (title: string) => {
+    const t = title.toLowerCase();
+    if (t.includes('sukses') || t.includes('diterima') || t.includes('berhasil')) {
+      return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
     }
+    if (t.includes('peringatan') || t.includes('tagihan') || t.includes('terlambat')) {
+      return <AlertTriangle className="w-5 h-5 text-amber-500" />;
+    }
+    return <Info className="w-5 h-5 text-blue-500" />;
   };
 
   return (
@@ -77,31 +78,50 @@ export function Notifications() {
       </div>
 
       <div className="space-y-4">
-        {notifications.length > 0 ? (
-          notifications.map((notif) => (
+        {isLoading ? (
+          <div className="text-center py-12 text-slate-500">Memuat notifikasi...</div>
+        ) : notifications.length > 0 ? (
+          notifications.map((notif: any) => (
             <div 
               key={notif.id} 
-              className={`p-5 rounded-2xl border transition-all ${notif.isRead ? 'bg-white border-slate-200' : 'bg-primary/5 border-primary/20 shadow-sm'}`}
+              className={`p-5 rounded-2xl border transition-all ${notif.is_read ? 'bg-white border-slate-200' : 'bg-primary/5 border-primary/20 shadow-sm'} group relative`}
             >
               <div className="flex items-start space-x-4">
-                <div className={`mt-0.5 p-2 rounded-xl ${notif.isRead ? 'bg-slate-100' : 'bg-white shadow-sm'}`}>
-                  {getIcon(notif.type)}
+                <div className={`mt-0.5 p-2 rounded-xl ${notif.is_read ? 'bg-slate-100' : 'bg-white shadow-sm'}`}>
+                  {getIcon(notif.title)}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 pr-8">
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-1">
-                    <h3 className={`text-base font-bold ${notif.isRead ? 'text-slate-700' : 'text-navy'}`}>
+                    <h3 className={`text-base font-bold ${notif.is_read ? 'text-slate-700' : 'text-navy'}`}>
                       {notif.title}
                     </h3>
                     <span className="flex items-center text-xs font-medium text-slate-400 mt-1 sm:mt-0">
                       <Clock className="w-3 h-3 mr-1" />
-                      {notif.time}
+                      {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true, locale: localeId })}
                     </span>
                   </div>
-                  <p className={`text-sm ${notif.isRead ? 'text-slate-500' : 'text-slate-600 font-medium'}`}>
+                  <p className={`text-sm ${notif.is_read ? 'text-slate-500' : 'text-slate-600 font-medium'}`}>
                     {notif.message}
                   </p>
+                  
+                  {!notif.is_read && (
+                    <button 
+                      onClick={() => readMutation.mutate(notif.id)}
+                      className="text-xs font-bold text-primary mt-2 hover:underline"
+                    >
+                      Tandai sudah dibaca
+                    </button>
+                  )}
                 </div>
               </div>
+              
+              <button 
+                onClick={() => deleteMutation.mutate(notif.id)}
+                className="absolute top-4 right-4 p-2 text-slate-300 hover:text-danger hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                title="Hapus notifikasi"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
           ))
         ) : (

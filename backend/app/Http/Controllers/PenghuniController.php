@@ -38,6 +38,7 @@ class PenghuniController extends Controller
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'role_id' => $role->id,
+                'status' => 'Aktif',
             ]);
 
             return Penghuni::create([

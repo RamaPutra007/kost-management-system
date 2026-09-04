@@ -11,12 +11,16 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Pagination } from '@/components/ui/Pagination';
 import { toast } from 'react-hot-toast';
-import { Search, Filter, Plus, Calendar, Edit2, AlertCircle } from 'lucide-react';
+import { showAlert } from '@/lib/utils';
+import { Search, Filter, Plus, Calendar, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { formatRupiah } from '@/lib/utils';
 
 export function KontrakList() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
 
   // Search, Filter, and Pagination state
@@ -60,19 +64,39 @@ export function KontrakList() {
     }
   });
 
-  const createMutation = useMutation({
+  const mutation = useMutation({
     mutationFn: async (submitData: any) => {
-      return await api.post('/kontrak_sewa', submitData);
+      if (editingId) {
+        return await api.put(`/kontrak_sewa/${editingId}`, submitData);
+      } else {
+        return await api.post('/kontrak_sewa', submitData);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kontrak_sewa'] });
       queryClient.invalidateQueries({ queryKey: ['kamar'] });
-      toast.success('Kontrak baru berhasil dibuat');
+      showAlert.success(editingId ? 'Kontrak berhasil diperbarui' : 'Kontrak baru berhasil dibuat');
       setIsModalOpen(false);
       resetForm();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Gagal membuat kontrak');
+      showAlert.error(err.response?.data?.message || 'Gagal menyimpan kontrak');
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await api.delete(`/kontrak_sewa/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kontrak_sewa'] });
+      queryClient.invalidateQueries({ queryKey: ['kamar'] });
+      showAlert.success('Kontrak berhasil dihapus');
+      setIsDeleteModalOpen(false);
+      setSelectedItem(null);
+    },
+    onError: (err: any) => {
+      showAlert.error(err.response?.data?.message || 'Gagal menghapus kontrak');
     }
   });
 
@@ -83,18 +107,18 @@ export function KontrakList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kontrak_sewa'] });
       queryClient.invalidateQueries({ queryKey: ['kamar'] });
-      toast.success('Status kontrak berhasil diperbarui');
+      showAlert.success('Status kontrak berhasil diperbarui');
       setIsStatusModalOpen(false);
       setSelectedItem(null);
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Terjadi kesalahan');
+      showAlert.error(err.response?.data?.message || 'Terjadi kesalahan');
     }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate(formData);
+    mutation.mutate(formData);
   };
 
   const handleUpdateStatus = (e: React.FormEvent) => {
@@ -110,13 +134,32 @@ export function KontrakList() {
     setIsStatusModalOpen(true);
   };
 
+  const handleEdit = (kontrak: any) => {
+    setEditingId(kontrak.id);
+    setFormData({
+      kamar_id: kontrak.kamar_id,
+      penghuni_id: kontrak.penghuni_id,
+      tanggal_mulai: kontrak.tanggal_mulai.split('T')[0], // format to YYYY-MM-DD if needed
+      tanggal_selesai: kontrak.tanggal_selesai.split('T')[0],
+      harga_kesepakatan: kontrak.harga_kesepakatan,
+      deposit: kontrak.deposit || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (kontrak: any) => {
+    setSelectedItem(kontrak);
+    setIsDeleteModalOpen(true);
+  };
+
   const resetForm = () => {
+    setEditingId(null);
     setFormData({
       kamar_id: kamars?.[0]?.id || '',
       penghuni_id: penghunis?.[0]?.id || '',
       tanggal_mulai: '',
       tanggal_selesai: '',
-      harga_kesepakatan: '',
+      harga_kesepakatan: kamars?.[0]?.harga || '',
       deposit: '',
     });
   };
@@ -234,7 +277,7 @@ export function KontrakList() {
                       </div>
                     </TableCell>
                     <TableCell className="font-semibold text-slate-700">
-                      Rp {Number(item.harga_kesepakatan).toLocaleString('id-ID')}
+                      Rp {formatRupiah(item.harga_kesepakatan)}
                     </TableCell>
                     <TableCell>
                       <Badge variant={item.status === 'Aktif' ? 'success' : item.status === 'Selesai' ? 'default' : 'danger'}>
@@ -242,9 +285,17 @@ export function KontrakList() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="outline" size="sm" onClick={() => openStatusModal(item)} className="text-xs font-semibold hover:bg-slate-100">
-                        Ubah Status
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="sm" onClick={() => openStatusModal(item)} className="text-slate-500 hover:bg-slate-100 hover:text-navy px-2 py-1 h-auto text-xs font-semibold" title="Ubah Status">
+                          Ubah Status
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleEdit(item)} className="text-primary hover:bg-blue-50 w-8 h-8 p-0" title="Edit">
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDeleteClick(item)} className="text-danger hover:bg-red-50 w-8 h-8 p-0" title="Hapus">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -264,25 +315,36 @@ export function KontrakList() {
         </CardContent>
       </Card>
 
-      {/* Modal Tambah */}
+      {/* Modal Tambah / Edit */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Buat Kontrak Sewa Baru"
+        title={editingId ? "Edit Kontrak Sewa" : "Buat Kontrak Sewa Baru"}
       >
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-1.5">
             <label className="text-sm font-bold text-navy flex items-center">
-              Kamar <span className="text-xs font-normal text-slate-400 ml-2">(Hanya yang kosong)</span>
+              Kamar { !editingId && <span className="text-xs font-normal text-slate-400 ml-2">(Hanya yang kosong)</span> }
             </label>
             <Select
               value={formData.kamar_id}
-              onChange={(e) => setFormData({ ...formData, kamar_id: e.target.value })}
+              onChange={(e) => {
+                const selectedKamarId = e.target.value;
+                const selectedKamar = kamars?.find((k: any) => k.id.toString() === selectedKamarId);
+                setFormData({ 
+                  ...formData, 
+                  kamar_id: selectedKamarId,
+                  harga_kesepakatan: selectedKamar ? selectedKamar.harga : formData.harga_kesepakatan
+                });
+              }}
               required
             >
-              <option value="">-- Pilih Kamar Tersedia --</option>
+              <option value="">-- Pilih Kamar --</option>
+              {editingId && !kamars?.find((k: any) => k.id === selectedItem?.kamar_id) && (
+                <option value={formData.kamar_id}>Kamar Terpilih Saat Ini</option>
+              )}
               {kamars?.map((k: any) => (
-                <option key={k.id} value={k.id}>Kamar {k.nomor_kamar} - Rp {Number(k.harga).toLocaleString('id-ID')}</option>
+                <option key={k.id} value={k.id}>Kamar {k.nomor_kamar} - Rp {formatRupiah(k.harga)}</option>
               ))}
             </Select>
           </div>
@@ -320,28 +382,36 @@ export function KontrakList() {
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-sm font-bold text-navy">Harga Kesepakatan (Rp)</label>
+            <label className="text-sm font-bold text-navy">Harga Kesepakatan / Bulan (Rp)</label>
             <Input
-              type="number"
-              placeholder="1500000"
-              value={formData.harga_kesepakatan}
-              onChange={(e) => setFormData({ ...formData, harga_kesepakatan: e.target.value })}
+              type="text"
+              placeholder="1.500.000"
+              value={formData.harga_kesepakatan ? formatRupiah(formData.harga_kesepakatan) : ''}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, '');
+                setFormData({ ...formData, harga_kesepakatan: val });
+              }}
               required
             />
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-bold text-navy">Deposit Opsional (Rp)</label>
             <Input
-              type="number"
+              type="text"
               placeholder="0"
-              value={formData.deposit}
-              onChange={(e) => setFormData({ ...formData, deposit: e.target.value })}
+              value={formData.deposit ? formatRupiah(formData.deposit) : ''}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, '');
+                setFormData({ ...formData, deposit: val });
+              }}
             />
           </div>
           
           <div className="pt-6 flex justify-end space-x-3">
             <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Batal</Button>
-            <Button type="submit" isLoading={createMutation.isPending} className="shadow-md">Simpan Kontrak</Button>
+            <Button type="submit" isLoading={mutation.isPending} className="shadow-md">
+              {editingId ? 'Simpan Perubahan' : 'Simpan Kontrak'}
+            </Button>
           </div>
         </form>
       </Modal>
@@ -374,6 +444,33 @@ export function KontrakList() {
             <Button type="submit" isLoading={updateStatusMutation.isPending} className="shadow-md">Simpan Perubahan</Button>
           </div>
         </form>
+      </Modal>
+
+      {/* Modal Hapus */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Konfirmasi Hapus"
+      >
+        <div className="space-y-4 pt-2">
+          <div className="p-4 bg-red-50 text-red-800 rounded-xl border border-red-100 flex gap-3 items-start">
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <p className="text-sm font-medium">
+              Apakah Anda yakin ingin menghapus kontrak sewa untuk <strong className="font-black text-danger">{selectedItem?.penghuni?.user?.name}</strong> di Kamar <strong className="font-black text-danger">{selectedItem?.kamar?.nomor_kamar}</strong>?
+              Data yang dihapus tidak dapat dikembalikan. Kamar akan otomatis diubah statusnya menjadi Kosong.
+            </p>
+          </div>
+          <div className="flex justify-end space-x-3 pt-2">
+            <Button variant="ghost" onClick={() => setIsDeleteModalOpen(false)}>Batal</Button>
+            <Button
+              variant="danger"
+              isLoading={deleteMutation.isPending}
+              onClick={() => selectedItem && deleteMutation.mutate(selectedItem.id)}
+            >
+              Ya, Hapus Permanen
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

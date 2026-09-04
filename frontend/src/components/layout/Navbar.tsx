@@ -20,7 +20,7 @@ export function Navbar({ onMenuClick, user }: NavbarProps) {
 
   const profileMenu = [
     { label: 'Profil Saya', onClick: () => navigate('/profil') },
-    { label: 'Pengaturan', onClick: () => navigate('/pengaturan') },
+    ...(user?.role?.name === 'Owner' ? [{ label: 'Pengaturan', onClick: () => navigate('/pengaturan') }] : []),
     { label: 'Keluar', danger: true, onClick: logout }
   ];
 

@@ -30,6 +30,12 @@ class AuthController extends Controller
             ]);
         }
 
+        if ($user->status === 'Nonaktif') {
+            throw ValidationException::withMessages([
+                'email' => ['Akun Anda telah dinonaktifkan. Silakan hubungi admin.'],
+            ]);
+        }
+
         // Hapus token lama jika diperlukan
         // $user->tokens()->delete();
 

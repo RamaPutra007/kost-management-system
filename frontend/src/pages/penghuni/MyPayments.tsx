@@ -55,7 +55,7 @@ export function MyPayments() {
                     <TableCell>{item.metode_pembayaran}</TableCell>
                     <TableCell>
                       <Badge variant={item.status_verifikasi === 'Valid' ? 'success' : item.status_verifikasi === 'Invalid' ? 'danger' : 'warning'}>
-                        {item.status_verifikasi}
+                        {item.status_verifikasi === 'Pending' ? 'Menunggu Verifikasi' : item.status_verifikasi}
                       </Badge>
                     </TableCell>
                   </TableRow>

@@ -11,11 +11,11 @@ class TagihanController extends Controller
     {
         if ($request->user()->role->name === 'Penghuni') {
             $penghuni_id = $request->user()->penghuni->id ?? null;
-            return response()->json(Tagihan::with(['penghuni', 'kontrak_sewa'])->where('penghuni_id', $penghuni_id)->paginate(15));
+            return response()->json(Tagihan::with(['penghuni.user', 'kontrakSewa.kamar'])->where('penghuni_id', $penghuni_id)->paginate(15));
         }
 
         $this->authorize('viewAny', Tagihan::class);
-        return response()->json(Tagihan::with(['penghuni', 'kontrak_sewa'])->paginate(15));
+        return response()->json(Tagihan::with(['penghuni.user', 'kontrakSewa.kamar'])->paginate(15));
     }
 
     public function store(Request $request)
@@ -36,6 +36,18 @@ class TagihanController extends Controller
         $validated['status'] = $validated['status'] ?? 'Belum Lunas';
 
         $tagihan = Tagihan::create($validated);
+
+        // Notifikasi untuk Penghuni
+        $penghuni = \App\Models\Penghuni::find($tagihan->penghuni_id);
+        if ($penghuni && $penghuni->user_id) {
+            \App\Models\Notification::create([
+                'user_id' => $penghuni->user_id,
+                'title' => 'Tagihan Baru',
+                'message' => 'Tagihan bulan ' . $tagihan->bulan_tagihan . ' sebesar Rp' . number_format($tagihan->total_tagihan, 0, ',', '.') . ' telah diterbitkan.',
+                'is_read' => false
+            ]);
+        }
+
         return response()->json($tagihan, 201);
     }
 
@@ -46,7 +58,7 @@ class TagihanController extends Controller
         }
 
         $this->authorize('view', $tagihan);
-        return response()->json($tagihan->load(['penghuni', 'kontrak_sewa']));
+        return response()->json($tagihan->load(['penghuni.user', 'kontrakSewa.kamar']));
     }
 
     public function update(Request $request, Tagihan $tagihan)

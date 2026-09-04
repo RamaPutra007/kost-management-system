@@ -11,11 +11,22 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Pagination } from '@/components/ui/Pagination';
 import { toast } from 'react-hot-toast';
-import { Search, Filter, Plus, Calendar, AlertCircle, FileText } from 'lucide-react';
+import { showAlert } from '@/lib/utils';
+import { Search, Filter, Plus, Edit2, AlertCircle, FileText, CheckCircle, Calendar } from 'lucide-react';
+import { formatRupiah } from '@/lib/utils';
 
 export function TagihanList() {
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+
+  const [editFormData, setEditFormData] = useState({
+    nominal: '',
+    denda: '0',
+    jatuh_tempo: '',
+    status: 'Belum Lunas',
+  });
 
   // Search, Filter, Pagination
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +38,7 @@ export function TagihanList() {
     penghuni_id: '',
     kontrak_sewa_id: '',
     bulan_tagihan: '',
+    durasi: '1',
     nominal: '',
     denda: '0',
     jatuh_tempo: '',
@@ -55,18 +67,48 @@ export function TagihanList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tagihan'] });
-      toast.success('Tagihan baru berhasil diterbitkan');
+      showAlert.success('Tagihan baru berhasil diterbitkan');
       setIsModalOpen(false);
       resetForm();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Gagal menerbitkan tagihan');
+      showAlert.error(err.response?.data?.message || 'Gagal menerbitkan tagihan');
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (submitData: any) => {
+      return await api.put(`/tagihan/${selectedItem.id}`, submitData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tagihan'] });
+      showAlert.success('Tagihan berhasil diperbarui');
+      setIsEditModalOpen(false);
+    },
+    onError: (err: any) => {
+      showAlert.error(err.response?.data?.message || 'Gagal memperbarui tagihan');
     }
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     createMutation.mutate(formData);
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateMutation.mutate(editFormData);
+  };
+
+  const handleEditClick = (item: any) => {
+    setSelectedItem(item);
+    setEditFormData({
+      nominal: item.nominal ? Math.floor(Number(item.nominal)).toString() : '',
+      denda: item.denda ? Math.floor(Number(item.denda)).toString() : '0',
+      jatuh_tempo: item.jatuh_tempo ? item.jatuh_tempo.split('T')[0] : '',
+      status: item.status || 'Belum Lunas',
+    });
+    setIsEditModalOpen(true);
   };
 
   const handleKontrakChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -77,11 +119,21 @@ export function TagihanList() {
         ...formData,
         kontrak_sewa_id: kId,
         penghuni_id: selected.penghuni_id,
-        nominal: selected.harga_kesepakatan,
+        nominal: selected.harga_kesepakatan ? Math.floor(Number(selected.harga_kesepakatan) * Number(formData.durasi)).toString() : '',
       });
     } else {
       setFormData({ ...formData, kontrak_sewa_id: '' });
     }
+  };
+
+  const handleDurasiChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const d = e.target.value;
+    const selected = kontrak?.find((k: any) => k.id.toString() === formData.kontrak_sewa_id);
+    setFormData({
+      ...formData,
+      durasi: d,
+      nominal: selected?.harga_kesepakatan ? Math.floor(Number(selected.harga_kesepakatan) * Number(d)).toString() : formData.nominal,
+    });
   };
 
   const resetForm = () => {
@@ -89,6 +141,7 @@ export function TagihanList() {
       penghuni_id: '',
       kontrak_sewa_id: '',
       bulan_tagihan: '',
+      durasi: '1',
       nominal: '',
       denda: '0',
       jatuh_tempo: '',
@@ -107,7 +160,7 @@ export function TagihanList() {
     
     return data.filter((item: any) => {
       const penghuniName = item.penghuni?.user?.name || '';
-      const kamarNo = item.kontrak?.kamar?.nomor_kamar || '';
+      const kamarNo = (item.kontrakSewa || item.kontrak_sewa)?.kamar?.nomor_kamar || '';
       const query = searchQuery.toLowerCase();
       
       const matchSearch = penghuniName.toLowerCase().includes(query) || kamarNo.toLowerCase().includes(query);
@@ -204,10 +257,10 @@ export function TagihanList() {
                       </TableCell>
                       <TableCell>
                         <p className="font-bold text-slate-700">{item.penghuni?.user?.name || '-'}</p>
-                        <p className="text-xs text-slate-500">Kamar {item.kontrak?.kamar?.nomor_kamar || '-'}</p>
+                        <p className="text-xs text-slate-500">Kamar {(item.kontrakSewa || item.kontrak_sewa)?.kamar?.nomor_kamar || '-'}</p>
                       </TableCell>
-                      <TableCell className="font-black text-navy text-base">
-                        Rp {Number(item.total_tagihan).toLocaleString('id-ID')}
+                      <TableCell className="font-semibold text-slate-700">
+                        Rp {formatRupiah(item.total_tagihan)}
                       </TableCell>
                       <TableCell>
                         <span className={`font-semibold ${isOverdue ? 'text-danger' : 'text-slate-600'}`}>
@@ -220,8 +273,8 @@ export function TagihanList() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={item.status === 'Lunas' ? 'success' : isOverdue ? 'danger' : 'warning'}>
-                          {isOverdue ? 'Terlambat' : item.status}
+                        <Badge variant={item.status === 'Lunas' ? 'success' : item.status === 'Menunggu Verifikasi' ? 'info' : isOverdue ? 'danger' : 'warning'}>
+                          {item.status === 'Menunggu Verifikasi' ? 'Menunggu Verifikasi' : isOverdue ? 'Terlambat' : item.status}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -265,9 +318,22 @@ export function TagihanList() {
               ))}
             </Select>
           </div>
+          <div className="space-y-1.5">
+            <label className="text-sm font-bold text-navy">Periode Tagihan (Siklus Pembayaran)</label>
+            <Select
+              value={formData.durasi}
+              onChange={handleDurasiChange}
+              required
+            >
+              <option value="1">Per 1 Bulan</option>
+              <option value="3">Per 3 Bulan</option>
+              <option value="6">Per 6 Bulan</option>
+              <option value="12">Per 1 Tahun (12 Bulan)</option>
+            </Select>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-sm font-bold text-navy">Periode Tagihan</label>
+              <label className="text-sm font-bold text-navy">Mulai Bulan Tagihan</label>
               <Input
                 type="date"
                 value={formData.bulan_tagihan}
@@ -289,18 +355,24 @@ export function TagihanList() {
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-navy">Sewa Pokok (Rp)</label>
               <Input
-                type="number"
-                value={formData.nominal}
-                onChange={(e) => setFormData({ ...formData, nominal: e.target.value })}
+                type="text"
+                value={formatRupiah(formData.nominal)}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, '');
+                  setFormData({ ...formData, nominal: rawValue });
+                }}
                 required
               />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-navy">Biaya Lain/Denda (Rp)</label>
               <Input
-                type="number"
-                value={formData.denda}
-                onChange={(e) => setFormData({ ...formData, denda: e.target.value })}
+                type="text"
+                value={formatRupiah(formData.denda)}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, '');
+                  setFormData({ ...formData, denda: rawValue });
+                }}
               />
             </div>
           </div>
@@ -308,6 +380,68 @@ export function TagihanList() {
           <div className="pt-6 flex justify-end space-x-3">
             <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Batal</Button>
             <Button type="submit" isLoading={createMutation.isPending} className="shadow-md">Terbitkan Tagihan</Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal Edit */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        title="Edit Tagihan"
+      >
+        <form onSubmit={handleEditSubmit} className="space-y-4 pt-2">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-navy">Tenggat Waktu</label>
+              <Input
+                type="date"
+                value={editFormData.jatuh_tempo}
+                onChange={(e) => setEditFormData({ ...editFormData, jatuh_tempo: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-navy">Status</label>
+              <Select
+                value={editFormData.status}
+                onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+              >
+                <option value="Belum Lunas">Belum Lunas</option>
+                <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+                <option value="Lunas">Lunas</option>
+              </Select>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-navy">Sewa Pokok (Rp)</label>
+              <Input
+                type="text"
+                value={formatRupiah(editFormData.nominal)}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, '');
+                  setEditFormData({ ...editFormData, nominal: rawValue });
+                }}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-navy">Biaya Lain/Denda (Rp)</label>
+              <Input
+                type="text"
+                value={formatRupiah(editFormData.denda)}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, '');
+                  setEditFormData({ ...editFormData, denda: rawValue });
+                }}
+              />
+            </div>
+          </div>
+          
+          <div className="pt-6 flex justify-end space-x-3">
+            <Button type="button" variant="ghost" onClick={() => setIsEditModalOpen(false)}>Batal</Button>
+            <Button type="submit" isLoading={updateMutation.isPending} className="shadow-md">Simpan Perubahan</Button>
           </div>
         </form>
       </Modal>

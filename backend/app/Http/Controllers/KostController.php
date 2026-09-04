@@ -36,18 +36,26 @@ class KostController extends Controller
 
     public function update(Request $request, Kost $kost)
     {
-        if ($request->user()->role->name === 'Penghuni') {
+        if ($request->user() && $request->user()->role && $request->user()->role->name === 'Penghuni') {
             abort(403, 'Unauthorized');
         }
 
-        $validated = $request->validate([
-            'nama' => 'sometimes|string|max:255',
-            'alamat' => 'sometimes|string',
-            'fasilitas_umum' => 'nullable|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'nama' => 'sometimes|string|max:255',
+                'alamat' => 'sometimes|string',
+                'no_telepon' => 'nullable|string|max:20',
+                'email' => 'nullable|email|max:255',
+                'fasilitas_umum' => 'nullable|string',
+                'settings' => 'nullable|array',
+            ]);
 
-        $kost->update($validated);
-        return response()->json($kost);
+            $kost->update($validated);
+            return response()->json($kost);
+        } catch (\Exception $e) {
+            \Log::error('Error updating kost: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to save settings', 'error' => $e->getMessage()], 500);
+        }
     }
 
     public function destroy(Request $request, Kost $kost)

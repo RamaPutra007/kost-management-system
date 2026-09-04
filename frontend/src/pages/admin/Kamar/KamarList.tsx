@@ -11,7 +11,9 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Pagination } from '@/components/ui/Pagination';
 import { toast } from 'react-hot-toast';
+import { showAlert } from '@/lib/utils';
 import { Search, Filter, Plus, Edit2, Trash2, AlertCircle } from 'lucide-react';
+import { formatRupiah } from '@/lib/utils';
 
 export function KamarList() {
   const queryClient = useQueryClient();
@@ -76,12 +78,12 @@ export function KamarList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kamar'] });
-      toast.success(editingId ? 'Kamar berhasil diubah' : 'Kamar berhasil ditambahkan');
+      showAlert.success(editingId ? 'Kamar berhasil diubah' : 'Kamar berhasil ditambahkan');
       setIsModalOpen(false);
       resetForm();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Terjadi kesalahan');
+      showAlert.error(err.response?.data?.message || 'Terjadi kesalahan');
     }
   });
 
@@ -91,12 +93,12 @@ export function KamarList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['kamar'] });
-      toast.success('Kamar berhasil dihapus');
+      showAlert.success('Kamar berhasil dihapus');
       setIsDeleteModalOpen(false);
       setSelectedItem(null);
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Terjadi kesalahan');
+      showAlert.error(err.response?.data?.message || 'Terjadi kesalahan');
     }
   });
 
@@ -130,8 +132,8 @@ export function KamarList() {
       nomor_kamar: '',
       tipe: '',
       harga: '',
-      fasilitas_ids: [],
       status: 'Kosong',
+      fasilitas_ids: [],
     });
   };
 
@@ -143,12 +145,12 @@ export function KamarList() {
   // Client-side filtering and pagination
   const filteredData = useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
-    
+
     return data.filter((kamar: any) => {
-      const matchSearch = kamar.nomor_kamar.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          kamar.tipe.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchSearch = kamar.nomor_kamar.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        kamar.tipe.toLowerCase().includes(searchQuery.toLowerCase());
       const matchStatus = statusFilter === 'Semua' || kamar.status === statusFilter;
-      
+
       return matchSearch && matchStatus;
     });
   }, [data, searchQuery, statusFilter]);
@@ -188,8 +190,8 @@ export function KamarList() {
             </div>
             <div className="w-full sm:w-auto flex items-center gap-2">
               <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-              <Select 
-                value={statusFilter} 
+              <Select
+                value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value);
                   setCurrentPage(1);
@@ -232,7 +234,7 @@ export function KamarList() {
                   <TableRow key={kamar.id} className="hover:bg-slate-50/80 transition-colors">
                     <TableCell className="font-bold text-navy">{kamar.nomor_kamar}</TableCell>
                     <TableCell className="text-slate-600 font-medium">{kamar.tipe}</TableCell>
-                    <TableCell className="font-semibold text-slate-700">Rp {Number(kamar.harga).toLocaleString('id-ID')}</TableCell>
+                    <TableCell className="font-semibold text-slate-700">Rp {formatRupiah(kamar.harga)}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {kamar.fasilitas && kamar.fasilitas.length > 0 ? (
@@ -264,13 +266,13 @@ export function KamarList() {
               )}
             </TableBody>
           </Table>
-          
+
           {totalPages > 1 && (
             <div className="p-4 border-t border-slate-100 flex justify-center">
-              <Pagination 
-                currentPage={currentPage} 
-                totalPages={totalPages} 
-                onPageChange={setCurrentPage} 
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
               />
             </div>
           )}
@@ -284,19 +286,6 @@ export function KamarList() {
       >
         <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5 sm:col-span-2">
-              <label className="text-sm font-bold text-navy">Properti Kost</label>
-              <Select
-                value={formData.kost_id}
-                onChange={(e) => setFormData({ ...formData, kost_id: e.target.value })}
-                required
-              >
-                <option value="">-- Pilih Properti --</option>
-                {kosts?.map((k: any) => (
-                  <option key={k.id} value={k.id}>{k.nama}</option>
-                ))}
-              </Select>
-            </div>
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-navy">Nomor Kamar</label>
               <Input
@@ -318,21 +307,35 @@ export function KamarList() {
             <div className="space-y-1.5">
               <label className="text-sm font-bold text-navy">Harga / Bulan (Rp)</label>
               <Input
-                type="number"
-                placeholder="1500000"
-                value={formData.harga}
-                onChange={(e) => setFormData({ ...formData, harga: e.target.value })}
+                type="text"
+                placeholder="1.500.000"
+                value={formData.harga ? formatRupiah(formData.harga) : ''}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '');
+                  setFormData({ ...formData, harga: val });
+                }}
                 required
               />
             </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-bold text-navy">Status</label>
+              <Select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+              >
+                <option value="Kosong">Kosong</option>
+                <option value="Terisi">Terisi</option>
+                <option value="Perbaikan">Perbaikan</option>
+              </Select>
+            </div>
             <div className="space-y-1.5 sm:col-span-2">
               <label className="text-sm font-bold text-navy">Fasilitas Kamar</label>
-              <div className="grid grid-cols-2 gap-2 mt-2">
+              <div className="grid grid-cols-2 gap-2 mt-2 p-3 border border-slate-200 rounded-xl bg-slate-50">
                 {fasilitasMaster?.map((f: any) => (
                   <label key={f.id} className="flex items-center space-x-2 text-sm text-slate-700 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="rounded border-slate-300 text-primary focus:ring-primary"
+                      className="rounded border-slate-300 text-primary focus:ring-primary w-4 h-4"
                       checked={formData.fasilitas_ids.includes(f.id)}
                       onChange={(e) => {
                         if (e.target.checked) {
@@ -346,17 +349,6 @@ export function KamarList() {
                   </label>
                 ))}
               </div>
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-navy">Status</label>
-              <Select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              >
-                <option value="Kosong">Kosong</option>
-                <option value="Terisi">Terisi</option>
-                <option value="Perbaikan">Perbaikan</option>
-              </Select>
             </div>
           </div>
           <div className="pt-6 flex justify-end space-x-3">

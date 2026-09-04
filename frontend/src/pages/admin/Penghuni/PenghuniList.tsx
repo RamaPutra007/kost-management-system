@@ -9,6 +9,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { Pagination } from '@/components/ui/Pagination';
 import { toast } from 'react-hot-toast';
+import { showAlert } from '@/lib/utils';
 import { Search, Plus, Edit2, Trash2, AlertCircle, UserPlus, Phone, Mail, CreditCard } from 'lucide-react';
 
 // Helper to get initials
@@ -60,12 +61,12 @@ export function PenghuniList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['penghuni'] });
-      toast.success(editingId ? 'Data penghuni berhasil diperbarui' : 'Penghuni baru berhasil ditambahkan');
+      showAlert.success(editingId ? 'Data penghuni berhasil diperbarui' : 'Penghuni baru berhasil ditambahkan');
       setIsModalOpen(false);
       resetForm();
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Terjadi kesalahan saat memproses data');
+      showAlert.error(err.response?.data?.message || 'Terjadi kesalahan saat memproses data');
     }
   });
 
@@ -75,12 +76,12 @@ export function PenghuniList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['penghuni'] });
-      toast.success('Data penghuni berhasil dihapus');
+      showAlert.success('Data penghuni berhasil dihapus');
       setIsDeleteModalOpen(false);
       setSelectedItem(null);
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Gagal menghapus penghuni');
+      showAlert.error(err.response?.data?.message || 'Gagal menghapus penghuni');
     }
   });
 

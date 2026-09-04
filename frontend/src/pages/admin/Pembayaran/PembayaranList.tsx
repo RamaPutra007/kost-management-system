@@ -11,7 +11,9 @@ import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
 import { Pagination } from '@/components/ui/Pagination';
 import { toast } from 'react-hot-toast';
-import { Search, Filter, Calendar, CreditCard, ShieldCheck } from 'lucide-react';
+import { showAlert } from '@/lib/utils';
+import { Search, Filter, CheckCircle, AlertCircle, Eye, Download, Info, Calendar, CreditCard, ShieldCheck } from 'lucide-react';
+import { formatRupiah } from '@/lib/utils';
 
 export function PembayaranList() {
   const queryClient = useQueryClient();
@@ -40,12 +42,12 @@ export function PembayaranList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pembayaran'] });
       queryClient.invalidateQueries({ queryKey: ['tagihan'] }); // Refresh tagihan since status affects it
-      toast.success('Status pembayaran berhasil diubah');
+      showAlert.success('Status pembayaran berhasil diubah');
       setIsStatusModalOpen(false);
       setSelectedItem(null);
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Terjadi kesalahan saat memverifikasi');
+      showAlert.error(err.response?.data?.message || 'Terjadi kesalahan saat memverifikasi');
     }
   });
 
@@ -158,10 +160,11 @@ export function PembayaranList() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="font-bold text-navy">{item.penghuni?.user?.name || '-'}</span>
+                      <p className="font-bold text-navy">{item.penghuni?.user?.name || '-'}</p>
+                      <p className="text-xs text-slate-500">Kamar {(item.tagihan?.kontrakSewa || item.tagihan?.kontrak_sewa)?.kamar?.nomor_kamar || '-'}</p>
                     </TableCell>
                     <TableCell className="font-black text-navy">
-                      Rp {Number(item.nominal_bayar).toLocaleString('id-ID')}
+                      Rp {formatRupiah(item.nominal_bayar)}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center text-sm text-slate-600">
@@ -175,9 +178,15 @@ export function PembayaranList() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => openStatusModal(item)} className="font-semibold hover:bg-slate-100 border-slate-200">
-                        Verifikasi
-                      </Button>
+                      {item.status_verifikasi === 'Pending' ? (
+                        <Button variant="outline" size="sm" onClick={() => openStatusModal(item)} className="font-semibold hover:bg-slate-100 border-slate-200">
+                          Verifikasi
+                        </Button>
+                      ) : (
+                        <Button variant="outline" size="sm" disabled className="font-semibold text-slate-500 border-slate-200 bg-slate-50 opacity-70">
+                          {item.status_verifikasi === 'Valid' ? 'Sudah Valid' : 'Ditolak'}
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))
@@ -205,7 +214,7 @@ export function PembayaranList() {
       >
         <form onSubmit={handleUpdateStatus} className="space-y-4 pt-2">
           <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 text-sm text-slate-700">
-            Pastikan uang masuk sebesar <strong className="text-navy font-black">Rp {Number(selectedItem?.nominal_bayar).toLocaleString('id-ID')}</strong> dari <strong className="text-navy">{selectedItem?.penghuni?.user?.name}</strong> telah sesuai mutasi rekening.
+            Pastikan uang masuk sebesar <strong className="text-navy font-black">Rp {formatRupiah(selectedItem?.nominal_bayar || 0)}</strong> dari <strong className="text-navy">{selectedItem?.penghuni?.user?.name}</strong> telah sesuai mutasi rekening.
           </div>
           <div className="space-y-1.5">
             <label className="text-sm font-bold text-navy">Keputusan Verifikasi</label>

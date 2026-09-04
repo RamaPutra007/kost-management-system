@@ -8,6 +8,7 @@ use App\Models\Kamar;
 use App\Models\Penghuni;
 use App\Models\KontrakSewa;
 use App\Models\Fasilitas;
+use App\Models\PaymentMethod;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -74,6 +75,23 @@ class DatabaseSeeder extends Seeder
             'tanggal_selesai' => date('Y-m-d', strtotime('+1 month')),
             'harga_kesepakatan' => 1500000,
             'status' => 'Aktif',
+        ]);
+
+        PaymentMethod::create([
+            'kost_id' => $kost->id,
+            'tipe' => 'Bank',
+            'nama_provider' => 'BCA',
+            'nomor_rekening' => '1234567890',
+            'atas_nama' => 'KOSTKU',
+            'is_active' => true,
+        ]);
+
+        PaymentMethod::create([
+            'kost_id' => $kost->id,
+            'tipe' => 'QRIS',
+            'nama_provider' => 'QRIS KOSTKU',
+            'instruksi' => 'Gopay, OVO, Dana, ShopeePay',
+            'is_active' => true,
         ]);
     }
 }
