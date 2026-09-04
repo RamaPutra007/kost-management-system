@@ -26,7 +26,7 @@ export function HeroSection() {
   ];
 
   return (
-    <section id="beranda" className="relative bg-background pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
+    <section id="beranda" className="relative bg-background pt-36 pb-16 lg:pt-48 lg:pb-24 overflow-hidden">
       {/* Background Decorations */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] max-w-7xl">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-50 mix-blend-multiply animate-pulse" />
@@ -36,11 +36,12 @@ export function HeroSection() {
       {/* Fixed Navbar with Demo Banner */}
       <header 
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 flex flex-col items-center",
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 flex flex-col",
+          isScrolled ? "bg-white/95 backdrop-blur-md shadow-sm" : "bg-transparent"
         )}
       >
         {/* Demo Banner */}
-        <div className="bg-primary text-white text-center py-2 px-4 text-xs sm:text-sm font-medium flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-4 w-full shadow-md z-[60]">
+        <div className="bg-primary text-white text-center py-2 px-4 text-xs sm:text-sm font-medium flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-4 w-full z-[60]">
           <div className="flex items-center space-x-2">
             <span className="relative flex h-2 w-2 sm:h-3 sm:w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
@@ -57,16 +58,13 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Floating Navbar */}
-        <div className={cn(
-            "w-[95%] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 rounded-full border border-slate-200/50 backdrop-blur-xl shadow-xl mt-4", 
-            isScrolled ? "bg-white/95 py-3 shadow-navy/5" : "bg-white/70 py-4 shadow-navy/5"
-          )}>
+        {/* Standard Navbar */}
+        <div className={cn("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex items-center justify-between transition-all duration-300", isScrolled ? "py-4" : "py-6")}>
           <Link to="/" className="flex items-center space-x-2.5 z-50">
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <Building2 className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-extrabold text-navy tracking-tight hidden sm:block">KOSTKU</span>
+            <span className="text-2xl font-extrabold text-navy tracking-tight">KOSTKU</span>
           </Link>
 
           {/* Desktop Nav */}
@@ -82,12 +80,12 @@ export function HeroSection() {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-4">
             <Link to="/login" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors px-4 py-2">
               Login
             </Link>
             <Link to="/login">
-              <Button variant="primary" className="rounded-full px-6 shadow-md shadow-primary/20 hover:-translate-y-0.5 transition-transform">
+              <Button variant="primary" className="rounded-full px-6 shadow-md shadow-primary/20">
                 Mulai Sekarang
               </Button>
             </Link>
@@ -95,10 +93,10 @@ export function HeroSection() {
 
           {/* Mobile Menu Toggle */}
           <button 
-            className="lg:hidden z-50 p-2 text-slate-600 bg-slate-100 rounded-full"
+            className="lg:hidden z-50 p-2 text-slate-600"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
           {/* Mobile Menu */}
