@@ -5,6 +5,7 @@ import {
 import { Download, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { formatRupiah } from '@/lib/utils';
 
 const data = [
   { name: 'Jan', Pendapatan: 4000, Pengeluaran: 2400 },
@@ -24,11 +25,37 @@ export function Laporan() {
           <h1 className="text-2xl sm:text-3xl font-extrabold text-navy">Laporan Keuangan</h1>
           <p className="text-slate-500 mt-1">Ringkasan performa dan mutasi kas properti Anda.</p>
         </div>
-        <Button variant="outline" className="flex items-center space-x-2">
-          <Download className="w-4 h-4" />
-          <span>Unduh PDF</span>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" className="flex items-center space-x-2 print:hidden" onClick={() => window.print()}>
+            <Download className="w-4 h-4" />
+            <span>Unduh PDF</span>
+          </Button>
+          <Button variant="outline" className="flex items-center space-x-2 print:hidden border-green-200 text-green-700 hover:bg-green-50" onClick={() => {
+            const csvContent = "data:text/csv;charset=utf-8," 
+              + "Bulan,Pendapatan,Pengeluaran\n"
+              + data.map(e => `${e.name},${e.Pendapatan},${e.Pengeluaran}`).join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "laporan_keuangan.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }}>
+            <Download className="w-4 h-4" />
+            <span>Unduh Excel</span>
+          </Button>
+        </div>
       </div>
+
+      <style type="text/css">
+        {`
+          @media print {
+            @page { margin: 0; size: landscape; }
+            body { padding: 2cm; -webkit-print-color-adjust: exact; }
+          }
+        `}
+      </style>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
