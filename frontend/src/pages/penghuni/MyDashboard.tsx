@@ -94,48 +94,44 @@ export function MyDashboard() {
             <h2 className="text-sm font-bold text-navy mb-2 flex items-center">
               <Home className="w-4 h-4 mr-2 text-primary" /> Kamar
             </h2>
-            <Card className="border-0 shadow-sm overflow-hidden bg-gradient-to-br from-emerald-600 to-teal-800 text-white h-full hover:shadow-md transition-all relative">
-              {/* Decorative background elements */}
-              <div className="absolute top-0 right-0 -mr-10 -mt-10 w-32 h-32 rounded-full bg-white opacity-10"></div>
-              <div className="absolute bottom-0 right-10 w-24 h-24 -mb-10 rounded-full bg-teal-400 opacity-20"></div>
-
-              <CardContent className="p-5 flex flex-col justify-center h-full relative z-10">
+            <Card className="border-slate-100 shadow-sm overflow-hidden bg-white h-full hover:shadow-md transition-all">
+              <CardContent className="p-5 flex flex-col justify-center h-full">
                 {activeKontrak ? (
                   <div className="flex flex-col space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shrink-0 border border-white/20 shadow-inner">
-                        <Home className="w-6 h-6 text-white" />
+                      <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center shrink-0 border border-slate-100">
+                        <Home className="w-6 h-6 text-primary" />
                       </div>
-                      <Badge className="bg-emerald-400/30 text-emerald-100 hover:bg-emerald-400/40 border-0 text-[10px] uppercase font-bold tracking-wider">
+                      <Badge className="bg-green-100 text-green-700 hover:bg-green-200 border-0 text-[10px] uppercase font-bold tracking-wider">
                         Aktif
                       </Badge>
                     </div>
                     <div>
-                      <p className="text-emerald-100 text-[10px] uppercase font-bold tracking-wider mb-1">Kamar Anda</p>
+                      <p className="text-slate-400 text-[10px] uppercase font-bold tracking-wider mb-1">Kamar Anda</p>
                       <div className="flex items-baseline space-x-2">
-                        <h3 className="text-3xl font-black text-white drop-shadow-sm">{activeKontrak.kamar?.nomor_kamar || '-'}</h3>
-                        <span className="text-xs font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-md shadow-sm uppercase tracking-wider">{activeKontrak.kamar?.tipe || '-'}</span>
+                        <h3 className="text-3xl font-black text-navy">{activeKontrak.kamar?.nomor_kamar || '-'}</h3>
+                        <span className="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md shadow-sm uppercase tracking-wider">{activeKontrak.kamar?.tipe || '-'}</span>
                       </div>
-                      <p className="text-sm font-bold text-emerald-100 mt-2">Rp {formatRupiah(activeKontrak.harga_kesepakatan || 0)} <span className="text-[10px] font-normal opacity-80">/bln</span></p>
+                      <p className="text-sm font-bold text-slate-500 mt-2">Rp {formatRupiah(activeKontrak.harga_kesepakatan || 0)} <span className="text-[10px] font-normal opacity-80">/bln</span></p>
                       
-                      <div className="mt-4 bg-black/20 text-white px-3 py-3 rounded-xl border border-white/10 flex items-start space-x-3 backdrop-blur-sm shadow-inner">
-                        <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-emerald-300" />
+                      <div className="mt-4 bg-slate-50 text-slate-700 px-3 py-3 rounded-xl border border-slate-100 flex items-start space-x-3">
+                        <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-slate-400" />
                         <div>
-                          <p className="text-xs font-semibold leading-tight text-emerald-50">
+                          <p className="text-xs font-semibold leading-tight text-slate-600">
                             Jangka Waktu: {activeKontrak.tanggal_mulai && activeKontrak.tanggal_selesai 
                               ? Math.max(1, Math.round((new Date(activeKontrak.tanggal_selesai).getTime() - new Date(activeKontrak.tanggal_mulai).getTime()) / (1000 * 60 * 60 * 24 * 30))) 
                               : 1} Bulan
                           </p>
-                          <p className="text-xs font-black leading-tight mt-1 text-white tracking-wide">
+                          <p className="text-xs font-black leading-tight mt-1 text-navy tracking-wide">
                             Tenggat Waktu: {activeKontrak.tanggal_selesai ? new Date(activeKontrak.tanggal_selesai).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'}
                           </p>
-                          <p className="text-[10px] leading-tight mt-1.5 text-emerald-200">Kontrak otomatis diperpanjang saat tagihan dilunasi.</p>
+                          <p className="text-[10px] leading-tight mt-1.5 text-slate-500">Kontrak otomatis diperpanjang saat tagihan dilunasi.</p>
                         </div>
                       </div>
                       
-                      <div className="mt-5 pt-4 border-t border-white/10">
-                        <p className="text-[10px] uppercase font-bold text-emerald-200 tracking-wider mb-1.5">Fasilitas Kamar</p>
-                        <p className="text-xs font-medium text-emerald-50 leading-relaxed">
+                      <div className="mt-5 pt-4 border-t border-slate-100">
+                        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-1.5">Fasilitas Kamar</p>
+                        <p className="text-xs font-medium text-slate-600 leading-relaxed">
                           {Array.isArray(activeKontrak.kamar?.fasilitas) 
                             ? (activeKontrak.kamar.fasilitas.map((f: any) => f.nama_fasilitas).join(', ') || '-') 
                             : (activeKontrak.kamar?.fasilitas || '-')}
@@ -145,8 +141,8 @@ export function MyDashboard() {
                   </div>
                 ) : (
                   <div className="text-center py-6">
-                    <Home className="w-8 h-8 text-white/50 mx-auto mb-3" />
-                    <p className="text-sm font-medium text-white/80">Belum ada kamar yang disewa</p>
+                    <Home className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                    <p className="text-sm font-medium text-slate-500">Belum ada kamar yang disewa</p>
                   </div>
                 )}
               </CardContent>
@@ -237,7 +233,7 @@ export function MyDashboard() {
             <h2 className="text-base font-bold text-navy mb-3 flex items-center">
               <FileText className="w-4 h-4 mr-2 text-indigo-600" /> Detail Kontrak
             </h2>
-            <Card className="border-slate-100 shadow-sm h-full">
+            <Card className="border-slate-100 shadow-sm">
               <CardContent className="p-5">
                 {activeKontrak ? (
                   <div className="space-y-4">
@@ -277,7 +273,7 @@ export function MyDashboard() {
             <h2 className="text-base font-bold text-navy mb-3 flex items-center">
               <CheckCircle2 className="w-4 h-4 mr-2 text-success" /> Pembayaran Terakhir
             </h2>
-            <Card className="border-slate-100 shadow-sm h-full">
+            <Card className="border-slate-100 shadow-sm">
               <CardContent className="p-5">
                 {lastPayment ? (
                   <div className="flex items-center justify-between py-2">

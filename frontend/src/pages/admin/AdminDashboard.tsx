@@ -85,13 +85,6 @@ export function AdminDashboard() {
     { label: 'Kontrak Segera Berakhir', value: kontrakAkanBerakhir, icon: CalendarClock, color: 'text-purple-600', bg: 'bg-purple-100' },
   ];
 
-  const quickActions = [
-    { label: 'Tambah Penghuni', icon: UserPlus, color: 'bg-blue-500 hover:bg-blue-600' },
-    { label: 'Tambah Tagihan', icon: FilePlus, color: 'bg-indigo-500 hover:bg-indigo-600' },
-    { label: 'Verifikasi Pembayaran', icon: CheckCircle, color: 'bg-emerald-500 hover:bg-emerald-600' },
-    { label: 'Tambah Pengeluaran', icon: Receipt, color: 'bg-rose-500 hover:bg-rose-600' },
-    { label: 'Tambah Kamar', icon: Plus, color: 'bg-slate-700 hover:bg-slate-800' },
-  ];
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -104,22 +97,6 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <Card className="border-slate-100 shadow-sm overflow-hidden">
-        <div className="bg-slate-50/50 p-4 border-b border-slate-100">
-          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider">Aksi Cepat (Quick Actions)</h3>
-        </div>
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-wrap gap-3">
-            {quickActions.map((action, i) => (
-              <Button key={i} className={`${action.color} text-white border-0 shadow-md flex-1 sm:flex-none justify-center whitespace-nowrap`}>
-                <action.icon className="w-4 h-4 mr-2" />
-                {action.label}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
