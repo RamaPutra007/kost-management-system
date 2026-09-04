@@ -45,6 +45,15 @@ export function Invoice() {
         </Button>
       </div>
 
+      <style type="text/css">
+        {`
+          @media print {
+            @page { margin: 0; }
+            body { padding: 2cm; }
+          }
+        `}
+      </style>
+
       <div className="bg-white p-8 sm:p-12 shadow-sm border border-slate-200 rounded-xl print:shadow-none print:border-none print:p-0">
         {/* Header */}
         <div className="flex justify-between items-start border-b pb-8 mb-8">
@@ -55,6 +64,9 @@ export function Invoice() {
             </p>
             <p className="text-sm text-slate-500">
               Tanggal: {format(new Date(), 'dd MMMM yyyy', { locale: localeID })}
+            </p>
+            <p className="text-sm text-slate-500">
+              Waktu: {format(new Date(), 'HH:mm', { locale: localeID })} WIB
             </p>
           </div>
           <div className="text-right">

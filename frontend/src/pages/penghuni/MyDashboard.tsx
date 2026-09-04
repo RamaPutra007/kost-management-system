@@ -257,9 +257,6 @@ export function MyDashboard() {
                           : '-'}
                       </span>
                     </div>
-                    <div className="pt-1">
-                      <Button variant="outline" className="w-full text-xs h-9">Lihat Dokumen Kontrak</Button>
-                    </div>
                   </div>
                 ) : (
                   <p className="text-sm text-slate-500 text-center py-4">Tidak ada data kontrak.</p>
