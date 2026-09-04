@@ -33,14 +33,23 @@ export function HeroSection() {
         <div className="absolute top-40 -left-40 w-[500px] h-[500px] bg-sky-200/40 rounded-full blur-3xl opacity-50 mix-blend-multiply" />
       </div>
 
-      {/* Sticky Navbar */}
+      {/* Fixed Navbar with Demo Banner */}
       <header 
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          isScrolled ? "bg-white/80 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 flex flex-col",
+          isScrolled ? "bg-white/90 backdrop-blur-md shadow-sm" : "bg-transparent"
         )}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        {/* Demo Banner */}
+        <div className="bg-primary text-white text-center py-2 px-4 text-xs sm:text-sm font-medium flex items-center justify-center space-x-2 w-full">
+          <span className="relative flex h-2 w-2 sm:h-3 sm:w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-white"></span>
+          </span>
+          <span>Anda sedang melihat versi <strong>Demo Aplikasi</strong>. Data mungkin di-reset berkala.</span>
+        </div>
+
+        <div className={cn("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-300", isScrolled ? "py-4" : "py-6")}>
           <Link to="/" className="flex items-center space-x-2.5 z-50">
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <Building2 className="w-6 h-6 text-white" />
