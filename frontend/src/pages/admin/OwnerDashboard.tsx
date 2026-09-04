@@ -160,34 +160,40 @@ export function OwnerDashboard() {
           <CardContent>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data?.chart_data || []} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                <BarChart data={data?.chart_data || []} margin={{ top: 10, right: 10, left: 10, bottom: 0 }} barGap={8}>
                   <defs>
-                    <linearGradient id="colorPendapatan" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#22C55E" stopOpacity={0}/>
+                    <linearGradient id="colorPendapatanOwner" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10B981" stopOpacity={1}/>
+                      <stop offset="95%" stopColor="#34D399" stopOpacity={0.8}/>
                     </linearGradient>
-                    <linearGradient id="colorPengeluaran" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#EF4444" stopOpacity={0}/>
+                    <linearGradient id="colorPengeluaranOwner" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#F43F5E" stopOpacity={1}/>
+                      <stop offset="95%" stopColor="#FB7185" stopOpacity={0.8}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontSize: 12 }} dy={10} />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: '#64748B', fontSize: 12 }} 
-                    tickFormatter={(value) => `Rp${value / 1000000}M`}
-                    dx={-10}
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" opacity={0.6} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b', fontWeight: 600 }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8', fontWeight: 500 }} 
+                    tickFormatter={(value) => value >= 1000000 ? `${(value / 1000000)}M` : value}
                   />
                   <Tooltip 
-                    formatter={(value: any) => formatIDR(value as number)}
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                    cursor={{fill: 'rgba(241, 245, 249, 0.4)'}} 
+                    contentStyle={{
+                      borderRadius: '12px', 
+                      border: 'none', 
+                      boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+                      padding: '10px 14px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      backdropFilter: 'blur(8px)'
+                    }}
+                    itemStyle={{fontWeight: 700, paddingTop: '2px', fontSize: '13px'}}
+                    labelStyle={{color: '#64748B', fontWeight: 600, marginBottom: '2px', fontSize: '13px'}}
+                    formatter={(value: any) => formatIDR(Number(value) || 0)}
                   />
-                  <Legend verticalAlign="top" height={36} iconType="circle" />
-                  <Area type="monotone" dataKey="pendapatan" stroke="#22C55E" strokeWidth={3} fillOpacity={1} fill="url(#colorPendapatan)" name="Pendapatan" />
-                  <Area type="monotone" dataKey="pengeluaran" stroke="#EF4444" strokeWidth={3} fillOpacity={1} fill="url(#colorPengeluaran)" name="Pengeluaran" />
-                </AreaChart>
+                  <Legend iconType="circle" wrapperStyle={{paddingTop: '20px'}} />
+                  <Bar dataKey="pendapatan" fill="url(#colorPendapatanOwner)" radius={[6, 6, 0, 0]} maxBarSize={32} animationDuration={1500} />
+                  <Bar dataKey="pengeluaran" fill="url(#colorPengeluaranOwner)" radius={[6, 6, 0, 0]} maxBarSize={32} animationDuration={1500} />
+                </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>

@@ -179,20 +179,40 @@ export function Laporan() {
             <BarChart
               data={chartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              barGap={8}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748B', fontSize: 12, fontWeight: 500}} dy={10} />
-              <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748B', fontSize: 12, fontWeight: 500}} dx={-10} 
+              <defs>
+                <linearGradient id="colorPendapatan" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#10B981" stopOpacity={1}/>
+                  <stop offset="95%" stopColor="#34D399" stopOpacity={0.8}/>
+                </linearGradient>
+                <linearGradient id="colorPengeluaran" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#F43F5E" stopOpacity={1}/>
+                  <stop offset="95%" stopColor="#FB7185" stopOpacity={0.8}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748B', fontSize: 13, fontWeight: 600}} dy={15} />
+              <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748B', fontSize: 13, fontWeight: 500}} dx={-10} 
                      tickFormatter={(value) => `Rp ${value >= 1000000 ? (value / 1000000) + 'jt' : value >= 1000 ? (value / 1000) + 'k' : value}`}
               />
               <RechartsTooltip 
-                cursor={{fill: '#F1F5F9'}} 
-                contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
+                cursor={{fill: 'rgba(241, 245, 249, 0.4)'}} 
+                contentStyle={{
+                  borderRadius: '16px', 
+                  border: 'none', 
+                  boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                  padding: '12px 16px',
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(8px)'
+                }}
+                itemStyle={{fontWeight: 700, paddingTop: '4px'}}
+                labelStyle={{color: '#64748B', fontWeight: 600, marginBottom: '4px'}}
                 formatter={(value: any) => formatIDR(Number(value) || 0)}
               />
-              <Legend iconType="circle" wrapperStyle={{paddingTop: '20px'}} />
-              <Bar dataKey="Pendapatan" fill="#2563EB" radius={[4, 4, 0, 0]} maxBarSize={40} />
-              <Bar dataKey="Pengeluaran" fill="#F43F5E" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Legend iconType="circle" wrapperStyle={{paddingTop: '24px', fontWeight: 600, fontSize: '14px', color: '#334155'}} />
+              <Bar dataKey="Pendapatan" fill="url(#colorPendapatan)" radius={[8, 8, 0, 0]} maxBarSize={48} animationDuration={1500} />
+              <Bar dataKey="Pengeluaran" fill="url(#colorPengeluaran)" radius={[8, 8, 0, 0]} maxBarSize={48} animationDuration={1500} />
             </BarChart>
           </ResponsiveContainer>
         </div>

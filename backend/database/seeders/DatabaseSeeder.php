@@ -54,11 +54,15 @@ class DatabaseSeeder extends Seeder
             'status' => 'Kosong',
         ]);
 
-        $f1 = Fasilitas::create(['nama_fasilitas' => 'AC', 'icon' => 'AirVent']);
-        $f2 = Fasilitas::create(['nama_fasilitas' => 'Kamar Mandi Dalam', 'icon' => 'ShowerHead']);
-        $f3 = Fasilitas::create(['nama_fasilitas' => 'Water Heater', 'icon' => 'Thermometer']);
+        $f1 = Fasilitas::create(['nama_fasilitas' => 'Kasur', 'icon' => 'Bed']);
+        $f2 = Fasilitas::create(['nama_fasilitas' => 'Lemari Pakaian', 'icon' => 'Archive']);
+        $f3 = Fasilitas::create(['nama_fasilitas' => 'Meja Kerja', 'icon' => 'Monitor']);
+        $f4 = Fasilitas::create(['nama_fasilitas' => 'Kursi', 'icon' => 'Armchair']);
+        $f5 = Fasilitas::create(['nama_fasilitas' => 'WiFi', 'icon' => 'Wifi']);
+        $f6 = Fasilitas::create(['nama_fasilitas' => 'Kamar Mandi Dalam', 'icon' => 'ShowerHead']);
+        $f7 = Fasilitas::create(['nama_fasilitas' => 'Water Heater', 'icon' => 'Thermometer']);
         
-        $kamar->fasilitas()->sync([$f1->id, $f2->id]);
+        $kamar->fasilitas()->sync([$f1->id, $f5->id, $f6->id]);
 
         $penghuni = Penghuni::create([
             'user_id' => $penghuniUser->id,
