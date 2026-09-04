@@ -330,9 +330,9 @@ export function KamarList() {
             </div>
             <div className="space-y-1.5 sm:col-span-2">
               <label className="text-sm font-bold text-navy">Fasilitas Kamar</label>
-              <div className="grid grid-cols-2 gap-2 mt-2 p-3 border border-slate-200 rounded-xl bg-slate-50">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-2 p-4 border border-slate-200 rounded-xl bg-slate-50 max-h-56 overflow-y-auto">
                 {fasilitasMaster?.map((f: any) => (
-                  <label key={f.id} className="flex items-center space-x-2 text-sm text-slate-700 cursor-pointer">
+                  <label key={f.id} className="flex items-center space-x-2 text-sm text-slate-700 cursor-pointer hover:text-primary transition-colors">
                     <input
                       type="checkbox"
                       className="rounded border-slate-300 text-primary focus:ring-primary w-4 h-4"
