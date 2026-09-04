@@ -136,9 +136,10 @@ export function MyComplaints() {
                         </div>
                       )}
 
-                      <p className="text-xs text-slate-500 mt-4 flex items-center">
-                        Dibuat pada {format(new Date(komplain.created_at), 'dd MMM yyyy, HH:mm', { locale: localeID })}
-                      </p>
+                      <div className="text-xs text-slate-500 mt-4 flex items-center gap-4">
+                        <span>Oleh: <strong className="text-slate-700">{komplain.penghuni?.user?.name || 'Unknown'}</strong> (Kamar {komplain.kamar?.nomor_kamar || '-'})</span>
+                        <span>Dibuat pada {format(new Date(komplain.created_at), 'dd MMM yyyy, HH:mm', { locale: localeID })}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
