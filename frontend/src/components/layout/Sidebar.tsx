@@ -46,46 +46,106 @@ export function Sidebar({
     switch (userRole) {
       case 'Owner':
         return [
-          { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-          { name: 'Kamar', path: '/kamar', icon: Home },
-          { name: 'Penghuni', path: '/penghuni', icon: Users },
-          { name: 'Kontrak', path: '/kontrak', icon: FileText },
-          { name: 'Tagihan', path: '/tagihan', icon: CreditCard },
-          { name: 'Pembayaran', path: '/pembayaran', icon: Wallet },
-          { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
-          { name: 'Paket', path: '/paket', icon: Package },
-          { name: 'Pengumuman', path: '/pengumuman', icon: Megaphone },
-          { name: 'Layanan & Komplain', path: '/komplain', icon: MessageSquare },
-          { name: 'Laporan', path: '/laporan', icon: FileText },
-          { name: 'Pengguna', path: '/pengguna', icon: Users },
+          {
+            title: 'Menu Utama',
+            items: [
+              { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+            ]
+          },
+          {
+            title: 'Manajemen Data',
+            items: [
+              { name: 'Kamar', path: '/kamar', icon: Home },
+              { name: 'Penghuni', path: '/penghuni', icon: Users },
+              { name: 'Kontrak', path: '/kontrak', icon: FileText },
+            ]
+          },
+          {
+            title: 'Keuangan',
+            items: [
+              { name: 'Tagihan', path: '/tagihan', icon: CreditCard },
+              { name: 'Pembayaran', path: '/pembayaran', icon: Wallet },
+              { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
+              { name: 'Laporan', path: '/laporan', icon: FileText },
+            ]
+          },
+          {
+            title: 'Layanan & Operasional',
+            items: [
+              { name: 'Paket', path: '/paket', icon: Package },
+              { name: 'Pengumuman', path: '/pengumuman', icon: Megaphone },
+              { name: 'Layanan & Komplain', path: '/komplain', icon: MessageSquare },
+            ]
+          },
+          {
+            title: 'Pengaturan',
+            items: [
+              { name: 'Pengguna', path: '/pengguna', icon: Users },
+            ]
+          }
         ];
       case 'Admin':
         return [
-          { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-          { name: 'Kamar', path: '/kamar', icon: Home },
-          { name: 'Penghuni', path: '/penghuni', icon: Users },
-          { name: 'Kontrak', path: '/kontrak', icon: FileText },
-          { name: 'Tagihan', path: '/tagihan', icon: CreditCard },
-          { name: 'Pembayaran', path: '/pembayaran', icon: Wallet },
-          { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
-          { name: 'Paket', path: '/paket', icon: Package },
-          { name: 'Pengumuman', path: '/pengumuman', icon: Megaphone },
-          { name: 'Layanan & Komplain', path: '/komplain', icon: MessageSquare },
-          { name: 'Laporan', path: '/laporan', icon: FileText },
+          {
+            title: 'Menu Utama',
+            items: [
+              { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+            ]
+          },
+          {
+            title: 'Manajemen Data',
+            items: [
+              { name: 'Kamar', path: '/kamar', icon: Home },
+              { name: 'Penghuni', path: '/penghuni', icon: Users },
+              { name: 'Kontrak', path: '/kontrak', icon: FileText },
+            ]
+          },
+          {
+            title: 'Keuangan',
+            items: [
+              { name: 'Tagihan', path: '/tagihan', icon: CreditCard },
+              { name: 'Pembayaran', path: '/pembayaran', icon: Wallet },
+              { name: 'Pengeluaran', path: '/pengeluaran', icon: PieChart },
+              { name: 'Laporan', path: '/laporan', icon: FileText },
+            ]
+          },
+          {
+            title: 'Layanan & Operasional',
+            items: [
+              { name: 'Paket', path: '/paket', icon: Package },
+              { name: 'Pengumuman', path: '/pengumuman', icon: Megaphone },
+              { name: 'Layanan & Komplain', path: '/komplain', icon: MessageSquare },
+            ]
+          }
         ];
       case 'Penghuni':
       default:
         return [
-          { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-          { name: 'Tagihan', path: '/my-bills', icon: CreditCard },
-          { name: 'Pembayaran', path: '/my-payments', icon: Wallet },
-          { name: 'Layanan & Komplain', path: '/my-complaints', icon: MessageSquare },
-          { name: 'Paket Saya', path: '/my-packages', icon: Package },
+          {
+            title: 'Menu Utama',
+            items: [
+              { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+            ]
+          },
+          {
+            title: 'Keuangan',
+            items: [
+              { name: 'Tagihan', path: '/my-bills', icon: CreditCard },
+              { name: 'Pembayaran', path: '/my-payments', icon: Wallet },
+            ]
+          },
+          {
+            title: 'Layanan',
+            items: [
+              { name: 'Layanan & Komplain', path: '/my-complaints', icon: MessageSquare },
+              { name: 'Paket Saya', path: '/my-packages', icon: Package },
+            ]
+          }
         ];
     }
   };
 
-  const navItems = getRoleBasedItems();
+  const navGroups = getRoleBasedItems();
 
   return (
     <>
@@ -125,39 +185,48 @@ export function Sidebar({
         </div>
 
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-3 custom-scrollbar">
-          <div className="space-y-1">
-            {navItems.map((item) => {
-              const isActive = location.pathname.startsWith(item.path);
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  title={isCollapsed && !isOpen ? item.name : undefined}
-                  onClick={() => setIsOpen(false)}
-                  className={cn(
-                    "flex items-center rounded-xl text-sm font-bold transition-all duration-200 group relative",
-                    isCollapsed && !isOpen ? "justify-center px-0 py-3" : "px-4 py-3.5",
-                    isActive
-                      ? "bg-primary text-white shadow-md shadow-primary/20"
-                      : "text-slate-400 hover:bg-slate-800 hover:text-white"
-                  )}
-                >
-                  <item.icon
-                    className={cn(
-                      "h-5 w-5 shrink-0 transition-colors",
-                      isActive ? "text-white" : "text-slate-500 group-hover:text-slate-300",
-                      (!isCollapsed || isOpen) && "mr-4"
-                    )}
-                  />
-                  {(!isCollapsed || isOpen) && (
-                    <span className="truncate">{item.name}</span>
-                  )}
-                  {isActive && isCollapsed && !isOpen && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-white rounded-l-full" />
-                  )}
-                </Link>
-              );
-            })}
+          <div className="space-y-6">
+            {navGroups.map((group, groupIdx) => (
+              <div key={groupIdx} className="space-y-1">
+                {(!isCollapsed || isOpen) && (
+                  <div className="px-4 text-[10px] font-extrabold tracking-widest text-slate-500 uppercase mb-2">
+                    {group.title}
+                  </div>
+                )}
+                {group.items.map((item) => {
+                  const isActive = location.pathname.startsWith(item.path);
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      title={isCollapsed && !isOpen ? item.name : undefined}
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        "flex items-center rounded-xl text-sm font-bold transition-all duration-200 group relative",
+                        isCollapsed && !isOpen ? "justify-center px-0 py-3" : "px-4 py-3.5",
+                        isActive
+                          ? "bg-primary text-white shadow-md shadow-primary/20"
+                          : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                      )}
+                    >
+                      <item.icon
+                        className={cn(
+                          "h-5 w-5 shrink-0 transition-colors",
+                          isActive ? "text-white" : "text-slate-500 group-hover:text-slate-300",
+                          (!isCollapsed || isOpen) && "mr-4"
+                        )}
+                      />
+                      {(!isCollapsed || isOpen) && (
+                        <span className="truncate">{item.name}</span>
+                      )}
+                      {isActive && isCollapsed && !isOpen && (
+                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-white rounded-l-full" />
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </nav>
 
