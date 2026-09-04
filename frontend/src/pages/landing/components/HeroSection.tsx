@@ -36,29 +36,41 @@ export function HeroSection() {
       {/* Fixed Navbar with Demo Banner */}
       <header 
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 flex flex-col",
-          isScrolled ? "bg-white/90 backdrop-blur-md shadow-sm" : "bg-transparent"
+          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 flex flex-col items-center",
         )}
       >
         {/* Demo Banner */}
-        <div className="bg-primary text-white text-center py-2 px-4 text-xs sm:text-sm font-medium flex items-center justify-center space-x-2 w-full">
-          <span className="relative flex h-2 w-2 sm:h-3 sm:w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-white"></span>
-          </span>
-          <span>Anda sedang melihat versi <strong>Demo Aplikasi</strong>. Data mungkin di-reset berkala.</span>
+        <div className="bg-primary text-white text-center py-2 px-4 text-xs sm:text-sm font-medium flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-4 w-full shadow-md z-[60]">
+          <div className="flex items-center space-x-2">
+            <span className="relative flex h-2 w-2 sm:h-3 sm:w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 bg-white"></span>
+            </span>
+            <span><strong>Versi Demo</strong> — </span>
+          </div>
+          <div className="flex items-center space-x-4 opacity-90 text-xs sm:text-sm">
+            <span>Admin: <strong>admin@gmail.com</strong></span>
+            <span className="hidden sm:inline">|</span>
+            <span>Penghuni: <strong>penghuni@gmail.com</strong></span>
+            <span className="hidden sm:inline">|</span>
+            <span>Pass: <strong>password</strong></span>
+          </div>
         </div>
 
-        <div className={cn("max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-300", isScrolled ? "py-4" : "py-6")}>
+        {/* Floating Navbar */}
+        <div className={cn(
+            "w-[95%] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between transition-all duration-500 rounded-full border border-slate-200/50 backdrop-blur-xl shadow-xl mt-4", 
+            isScrolled ? "bg-white/95 py-3 shadow-navy/5" : "bg-white/70 py-4 shadow-navy/5"
+          )}>
           <Link to="/" className="flex items-center space-x-2.5 z-50">
             <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
               <Building2 className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-extrabold text-navy tracking-tight">KOSTKU</span>
+            <span className="text-2xl font-extrabold text-navy tracking-tight hidden sm:block">KOSTKU</span>
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-8">
             {navLinks.map(link => (
               <a 
                 key={link.name} 
@@ -70,12 +82,12 @@ export function HeroSection() {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-3">
             <Link to="/login" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors px-4 py-2">
               Login
             </Link>
             <Link to="/login">
-              <Button variant="primary" className="rounded-full px-6 shadow-md shadow-primary/20">
+              <Button variant="primary" className="rounded-full px-6 shadow-md shadow-primary/20 hover:-translate-y-0.5 transition-transform">
                 Mulai Sekarang
               </Button>
             </Link>
@@ -83,10 +95,10 @@ export function HeroSection() {
 
           {/* Mobile Menu Toggle */}
           <button 
-            className="md:hidden z-50 p-2 text-slate-600"
+            className="lg:hidden z-50 p-2 text-slate-600 bg-slate-100 rounded-full"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
 
           {/* Mobile Menu */}
@@ -125,8 +137,8 @@ export function HeroSection() {
               <span>Sistem Manajemen Kost #1 di Indonesia</span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl lg:text-6xl xl:text-7xl font-extrabold text-navy tracking-tight mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100 leading-tight">
-              Kelola Kost Lebih <span className="text-primary bg-primary/10 px-4 py-1 rounded-2xl whitespace-nowrap">Mudah</span>,<br className="hidden md:block lg:hidden xl:block" /> Lebih Teratur, Lebih Menguntungkan
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-navy tracking-tight mb-6 animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100 leading-tight">
+              Kelola Kost Lebih <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-violet-500">Mudah</span>,<br className="hidden lg:block" /> Lebih Teratur, Lebih Menguntungkan
             </h1>
             
             <p className="text-lg md:text-xl text-slate-600 mb-10 max-w-3xl mx-auto lg:mx-0 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
@@ -146,26 +158,6 @@ export function HeroSection() {
                   Lihat Tampilan
                 </Button>
               </a>
-            </div>
-
-            {/* Demo Credentials Info */}
-            <div className="bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200/60 p-4 inline-block shadow-sm animate-in fade-in slide-in-from-bottom-12 duration-700 delay-500 w-full sm:w-auto text-left">
-              <p className="text-sm font-semibold text-slate-700 mb-3 flex items-center">
-                <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
-                Gunakan akun demo berikut untuk mencoba:
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="bg-white rounded-lg p-3 border border-slate-100 shadow-sm flex-1">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">👑 Admin / Owner</p>
-                  <p className="text-sm font-medium text-navy">admin@gmail.com</p>
-                  <p className="text-xs text-slate-500">Pass: password</p>
-                </div>
-                <div className="bg-white rounded-lg p-3 border border-slate-100 shadow-sm flex-1">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">👤 Penghuni</p>
-                  <p className="text-sm font-medium text-navy">penghuni@gmail.com</p>
-                  <p className="text-xs text-slate-500">Pass: password</p>
-                </div>
-              </div>
             </div>
           </div>
 
