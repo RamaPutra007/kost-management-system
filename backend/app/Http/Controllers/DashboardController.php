@@ -182,14 +182,14 @@ class DashboardController extends Controller
         // RECENT BILLS
         // ==============================
 
-        $recentBills = Tagihan::with(['penghuni.user', 'penghuni.kamar'])
+        $recentBills = Tagihan::with(['penghuni.user', 'kontrakSewa.kamar'])
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get()
             ->map(function ($tagihan) {
                 return [
                     'name' => $tagihan->penghuni->user->name ?? 'Unknown',
-                    'room' => 'Kamar ' . ($tagihan->penghuni->kamar->nomor_kamar ?? '-'),
+                    'room' => 'Kamar ' . ($tagihan->kontrakSewa->kamar->nomor_kamar ?? '-'),
                     'amount' => $tagihan->total_tagihan,
                     'status' => $tagihan->status,
                 ];
@@ -201,7 +201,7 @@ class DashboardController extends Controller
 
         $pembayaranPendingCount = Tagihan::where('status', 'Pending')->count();
 
-        $pendingPayments = Tagihan::with(['penghuni.user', 'penghuni.kamar'])
+        $pendingPayments = Tagihan::with(['penghuni.user', 'kontrakSewa.kamar'])
             ->where('status', 'Pending')
             ->orderBy('updated_at', 'desc')
             ->take(5)
@@ -209,13 +209,13 @@ class DashboardController extends Controller
             ->map(function ($t) {
                 return [
                     'name' => $t->penghuni->user->name ?? 'Unknown',
-                    'room' => 'Kamar ' . ($t->penghuni->kamar->nomor_kamar ?? '-'),
+                    'room' => 'Kamar ' . ($t->kontrakSewa->kamar->nomor_kamar ?? '-'),
                     'amount' => $t->total_tagihan,
                     'date' => $t->updated_at->diffForHumans(),
                 ];
             });
 
-        $unpaidBills = Tagihan::with(['penghuni.user', 'penghuni.kamar'])
+        $unpaidBills = Tagihan::with(['penghuni.user', 'kontrakSewa.kamar'])
             ->whereIn('status', ['Pending', 'Overdue'])
             ->whereDate('jatuh_tempo', '<', Carbon::now())
             ->orderBy('jatuh_tempo', 'asc')
@@ -225,12 +225,12 @@ class DashboardController extends Controller
                 $days = Carbon::now()->diffInDays($t->jatuh_tempo);
                 return [
                     'name' => $t->penghuni->user->name ?? 'Unknown',
-                    'room' => 'Kamar ' . ($t->penghuni->kamar->nomor_kamar ?? '-'),
+                    'room' => 'Kamar ' . ($t->kontrakSewa->kamar->nomor_kamar ?? '-'),
                     'due' => 'Terlambat ' . $days . ' Hari',
                 ];
             });
 
-        $expiringContracts = \App\Models\KontrakSewa::with(['penghuni.user', 'penghuni.kamar'])
+        $expiringContracts = \App\Models\KontrakSewa::with(['penghuni.user', 'kamar'])
             ->where('status', 'Aktif')
             ->whereDate('tanggal_selesai', '<=', Carbon::now()->addDays(30))
             ->orderBy('tanggal_selesai', 'asc')
@@ -241,13 +241,13 @@ class DashboardController extends Controller
                 $daysText = $days > 0 ? "H-{$days}" : "Hari Ini";
                 return [
                     'name' => $c->penghuni->user->name ?? 'Unknown',
-                    'room' => 'Kamar ' . ($c->penghuni->kamar->nomor_kamar ?? '-'),
+                    'room' => 'Kamar ' . ($c->kamar->nomor_kamar ?? '-'),
                     'expire' => $daysText . ' (' . Carbon::parse($c->tanggal_selesai)->translatedFormat('d M Y') . ')',
                 ];
             });
 
-        $recentTenants = Penghuni::with(['user', 'kamar', 'kontrakSewas' => function($q){
-                $q->orderBy('tanggal_mulai', 'desc');
+        $recentTenants = Penghuni::with(['user', 'kontrakSewas' => function($q){
+                $q->with('kamar')->orderBy('tanggal_mulai', 'desc');
             }])
             ->orderBy('created_at', 'desc')
             ->take(5)
@@ -255,14 +255,16 @@ class DashboardController extends Controller
             ->map(function ($p) {
                 $status = 'Tidak Aktif';
                 $dateText = '-';
+                $roomText = '-';
                 if ($p->kontrakSewas->isNotEmpty()) {
                     $kontrak = $p->kontrakSewas->first();
                     $status = $kontrak->status;
                     $dateText = 'Masuk ' . Carbon::parse($kontrak->tanggal_mulai)->translatedFormat('d M Y');
+                    $roomText = $kontrak->kamar->nomor_kamar ?? '-';
                 }
                 return [
                     'name' => $p->user->name ?? 'Unknown',
-                    'room' => 'Kamar ' . ($p->kamar->nomor_kamar ?? '-'),
+                    'room' => 'Kamar ' . $roomText,
                     'status' => $status,
                     'date' => $dateText,
                 ];
