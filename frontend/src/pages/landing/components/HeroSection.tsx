@@ -26,7 +26,7 @@ export function HeroSection() {
   ];
 
   return (
-    <section id="beranda" className="relative bg-background pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+    <section id="beranda" className="relative bg-background pt-24 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
       {/* Background Decorations */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] max-w-7xl">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-50 mix-blend-multiply animate-pulse" />
@@ -104,7 +104,7 @@ export function HeroSection() {
         </div>
       </header>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 pt-10">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10 pt-4">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-8 items-center">
           {/* Left Content - Text & CTA */}
           <div className="text-center lg:text-left">
