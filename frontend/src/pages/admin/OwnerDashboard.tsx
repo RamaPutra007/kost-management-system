@@ -44,30 +44,7 @@ const formatIDR = (value: number) => {
   }).format(value).replace('Rp', 'Rp ');
 };
 
-// Mock data for charts if API doesn't provide them yet
-const revenueData = [
-  { name: 'Jan', pendapatan: 10000000, pengeluaran: 4000000 },
-  { name: 'Feb', pendapatan: 11000000, pengeluaran: 3500000 },
-  { name: 'Mar', pendapatan: 10500000, pengeluaran: 5000000 },
-  { name: 'Apr', pendapatan: 12500000, pengeluaran: 3750000 }, // Current month matching prompt
-];
-
-const occupancyData = [
-  { name: 'Terisi', value: 96 },
-  { name: 'Kosong', value: 4 },
-];
-
-const paymentStatusData = [
-  { name: 'Lunas', value: 85 },
-  { name: 'Belum Lunas', value: 15 },
-];
-
-const expenseBreakdownData = [
-  { name: 'Listrik & Air', value: 1500000 },
-  { name: 'Maintenance', value: 1000000 },
-  { name: 'Gaji Karyawan', value: 1000000 },
-  { name: 'Lainnya', value: 250000 },
-];
+// Mock data constants removed since data is now coming from API
 
 const COLORS = ['#2563EB', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6'];
 
@@ -110,17 +87,17 @@ export function OwnerDashboard() {
     );
   }
 
-  // Use real data if available, fallback to exact prompt requirements
-  const totalKamar = data?.total_kamar || 120;
-  const kamarTerisi = data?.kamar_terisi || 115;
-  const kamarKosong = data?.kamar_kosong || 5;
+  // Use real data from API
+  const totalKamar = data?.total_kamar || 0;
+  const kamarTerisi = data?.kamar_terisi || 0;
+  const kamarKosong = data?.kamar_kosong || 0;
   
-  const pendapatanBulanan = data?.pendapatan_bulan_ini || 12500000;
-  const pengeluaran = data?.pengeluaran_bulan_ini || 3750000;
-  const pendapatanBersih = data?.laba_bersih || 8750000;
+  const pendapatanBulanan = data?.pendapatan_bulan_ini || 0;
+  const pengeluaran = data?.pengeluaran_bulan_ini || 0;
+  const pendapatanBersih = data?.laba_bersih || 0;
   
-  const tagihanJatuhTempo = data?.tagihan_jatuh_tempo || 12;
-  const kontrakAkanBerakhir = data?.kontrak_akan_berakhir || 4;
+  const tagihanJatuhTempo = data?.tagihan_jatuh_tempo || 0;
+  const kontrakAkanBerakhir = data?.kontrak_akan_berakhir || 0;
 
   const summaryCards = [
     { label: 'Total Kamar', value: totalKamar, icon: Building2, color: 'text-blue-600', bg: 'bg-blue-100' },
@@ -177,13 +154,13 @@ export function OwnerDashboard() {
           <CardHeader>
             <CardTitle className="text-lg font-bold text-navy flex items-center">
               <Activity className="w-5 h-5 mr-2 text-primary" />
-              Pendapatan vs Pengeluaran
+              Pendapatan vs Pengeluaran (6 Bulan)
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                <AreaChart data={data?.chart_data || []} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                   <defs>
                     <linearGradient id="colorPendapatan" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#22C55E" stopOpacity={0.3}/>
@@ -229,7 +206,7 @@ export function OwnerDashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={expenseBreakdownData}
+                    data={data?.expense_breakdown || []}
                     cx="50%"
                     cy="50%"
                     innerRadius={60}
@@ -237,7 +214,7 @@ export function OwnerDashboard() {
                     paddingAngle={5}
                     dataKey="value"
                   >
-                    {expenseBreakdownData.map((entry, index) => (
+                    {(data?.expense_breakdown || []).map((entry: any, index: number) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -246,7 +223,7 @@ export function OwnerDashboard() {
               </ResponsiveContainer>
             </div>
             <div className="mt-4 space-y-2">
-              {expenseBreakdownData.map((item, i) => (
+              {(data?.expense_breakdown || []).map((item: any, i: number) => (
                 <div key={i} className="flex justify-between items-center text-sm">
                   <div className="flex items-center">
                     <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: COLORS[i % COLORS.length] }}></div>
@@ -272,13 +249,13 @@ export function OwnerDashboard() {
           <CardContent>
              <div className="h-[200px]">
                <ResponsiveContainer width="100%" height="100%">
-                 <BarChart data={paymentStatusData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                 <BarChart data={data?.payment_status || []} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                    <XAxis type="number" hide />
                    <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: '#64748B', fontWeight: 600 }} />
                    <Tooltip formatter={(value) => `${value}%`} />
                    <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
-                     {paymentStatusData.map((entry, index) => (
+                     {(data?.payment_status || []).map((entry: any, index: number) => (
                        <Cell key={`cell-${index}`} fill={entry.name === 'Lunas' ? '#22C55E' : '#EF4444'} />
                      ))}
                    </Bar>
@@ -296,11 +273,7 @@ export function OwnerDashboard() {
           </CardHeader>
           <CardContent>
              <div className="space-y-4">
-               {[
-                 { name: 'Andi Wijaya', room: 'Kamar 101', amount: 1500000, status: 'Lunas' },
-                 { name: 'Siti Rahma', room: 'Kamar 102', amount: 1500000, status: 'Pending' },
-                 { name: 'Budi Santoso', room: 'Kamar 103', amount: 1750000, status: 'Overdue' }
-               ].map((item, i) => (
+               {data?.recent_bills?.length > 0 ? data.recent_bills.map((item: any, i: number) => (
                  <div key={i} className="flex justify-between items-center p-3 hover:bg-slate-50 rounded-xl transition-colors">
                    <div>
                      <p className="font-bold text-navy text-sm">{item.name}</p>
@@ -317,7 +290,9 @@ export function OwnerDashboard() {
                      </span>
                    </div>
                  </div>
-               ))}
+               )) : (
+                 <p className="text-sm text-slate-500 text-center py-4">Belum ada tagihan terbaru.</p>
+               )}
              </div>
           </CardContent>
         </Card>
@@ -333,12 +308,12 @@ export function OwnerDashboard() {
           <CardContent>
              <div className="space-y-6">
                <div className="bg-white/10 p-4 rounded-xl border border-white/10">
-                 <p className="text-sm text-blue-200 mb-1 font-medium">Proyeksi Pendapatan (Bulan Ini)</p>
-                 <h4 className="text-2xl font-black text-white">{formatIDR(15000000)}</h4>
+                 <p className="text-sm text-blue-200 mb-1 font-medium">Laba Bersih (Bulan Ini)</p>
+                 <h4 className="text-2xl font-black text-white">{formatIDR(pendapatanBersih)}</h4>
                  <div className="w-full bg-white/20 h-2 rounded-full mt-3">
-                   <div className="bg-green-400 h-2 rounded-full" style={{ width: '83%' }}></div>
+                   <div className="bg-green-400 h-2 rounded-full" style={{ width: `${Math.min(100, Math.max(0, (pendapatanBulanan > 0 ? (pendapatanBersih/pendapatanBulanan)*100 : 0)))}%` }}></div>
                  </div>
-                 <p className="text-xs text-slate-300 mt-2 text-right">83% Tercapai</p>
+                 <p className="text-xs text-slate-300 mt-2 text-right">Margin: {pendapatanBulanan > 0 ? Math.round((pendapatanBersih/pendapatanBulanan)*100) : 0}%</p>
                </div>
                
                <div className="flex space-x-3">
@@ -346,7 +321,7 @@ export function OwnerDashboard() {
                    <AlertCircle className="w-5 h-5 text-primary-light" />
                  </div>
                  <p className="text-sm text-slate-300 leading-relaxed">
-                   <strong className="text-white">Tip:</strong> Anda memiliki 12 tagihan jatuh tempo senilai <strong className="text-red-400">Rp 18.000.000</strong>. Segera kirimkan reminder otomatis.
+                   <strong className="text-white">Tip:</strong> Anda memiliki {tagihanJatuhTempo} tagihan jatuh tempo / tertunggak. Segera kirimkan reminder otomatis kepada penghuni.
                  </p>
                </div>
              </div>

@@ -111,6 +111,90 @@ class DashboardController extends Controller
             $pengeluaranBulanIni;
 
         // ==============================
+        // METRICS TAMBAHAN
+        // ==============================
+
+        $tagihanJatuhTempo = Tagihan::whereIn('status', ['Pending', 'Overdue'])
+            ->whereDate('jatuh_tempo', '<', Carbon::now())
+            ->count();
+
+        $kontrakAkanBerakhir = \App\Models\KontrakSewa::where('status', 'Aktif')
+            ->whereDate('tanggal_selesai', '<=', Carbon::now()->addDays(30))
+            ->count();
+
+        // ==============================
+        // CHART DATA (6 BULAN TERAKHIR)
+        // ==============================
+
+        $chartData = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = Carbon::now()->subMonths($i);
+            $pendapatan = Tagihan::where('status', 'Lunas')
+                ->whereMonth('created_at', $month->month)
+                ->whereYear('created_at', $month->year)
+                ->sum('total_tagihan');
+                
+            $pengeluaran = Pengeluaran::whereMonth('tanggal', $month->month)
+                ->whereYear('tanggal', $month->year)
+                ->sum('nominal');
+                
+            $chartData[] = [
+                'name' => $month->translatedFormat('M'),
+                'pendapatan' => (int)$pendapatan,
+                'pengeluaran' => (int)$pengeluaran,
+            ];
+        }
+
+        // ==============================
+        // EXPENSE BREAKDOWN (BULAN INI)
+        // ==============================
+
+        $expenseBreakdown = Pengeluaran::whereMonth('tanggal', $bulanIni)
+            ->whereYear('tanggal', $tahunIni)
+            ->selectRaw('kategori as name, SUM(nominal) as value')
+            ->groupBy('kategori')
+            ->get();
+            
+        if ($expenseBreakdown->isEmpty()) {
+            $expenseBreakdown = [
+                ['name' => 'Belum Ada', 'value' => 0]
+            ];
+        }
+
+        // ==============================
+        // PAYMENT STATUS (BULAN INI)
+        // ==============================
+
+        $lunasCount = Tagihan::where('status', 'Lunas')->whereMonth('created_at', $bulanIni)->count();
+        $belumLunasCount = Tagihan::whereIn('status', ['Pending', 'Overdue'])->whereMonth('created_at', $bulanIni)->count();
+        $totalTagihanCount = $lunasCount + $belumLunasCount;
+        
+        $lunasPct = $totalTagihanCount > 0 ? round(($lunasCount / $totalTagihanCount) * 100) : 0;
+        $belumLunasPct = $totalTagihanCount > 0 ? 100 - $lunasPct : 0;
+
+        $paymentStatusData = [
+            ['name' => 'Lunas', 'value' => $lunasPct],
+            ['name' => 'Belum Lunas', 'value' => $belumLunasPct],
+        ];
+
+        // ==============================
+        // RECENT BILLS
+        // ==============================
+
+        $recentBills = Tagihan::with(['penghuni.user', 'penghuni.kamar'])
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get()
+            ->map(function ($tagihan) {
+                return [
+                    'name' => $tagihan->penghuni->user->name ?? 'Unknown',
+                    'room' => 'Kamar ' . ($tagihan->penghuni->kamar->nomor_kamar ?? '-'),
+                    'amount' => $tagihan->total_tagihan,
+                    'status' => $tagihan->status,
+                ];
+            });
+
+        // ==============================
         // RESPONSE
         // ==============================
 
@@ -123,6 +207,12 @@ class DashboardController extends Controller
                 'pendapatan_bulan_ini' => $pendapatanBulanIni,
                 'pengeluaran_bulan_ini' => $pengeluaranBulanIni,
                 'laba_bersih' => $labaBersih,
+                'tagihan_jatuh_tempo' => $tagihanJatuhTempo,
+                'kontrak_akan_berakhir' => $kontrakAkanBerakhir,
+                'chart_data' => $chartData,
+                'expense_breakdown' => $expenseBreakdown,
+                'payment_status' => $paymentStatusData,
+                'recent_bills' => $recentBills,
             ],
         ]);
     }
