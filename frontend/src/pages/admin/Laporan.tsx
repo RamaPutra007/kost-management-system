@@ -31,15 +31,35 @@ export function Laporan() {
             <span>Unduh PDF</span>
           </Button>
           <Button variant="outline" className="flex items-center space-x-2 print:hidden border-green-200 text-green-700 hover:bg-green-50" onClick={() => {
-            const csvContent = "data:text/csv;charset=utf-8," 
-              + "LAPORAN KEUANGAN KOSTKU\n"
-              + `Tanggal Cetak:,${new Date().toLocaleDateString('id-ID')}\n\n`
-              + "Bulan,Pendapatan (Rp),Pengeluaran (Rp),Laba Bersih (Rp)\n"
-              + data.map(e => `${e.name},${e.Pendapatan},${e.Pengeluaran},${e.Pendapatan - e.Pengeluaran}`).join("\n");
-            const encodedUri = encodeURI(csvContent);
+            const tableHtml = `
+              <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+              <head><meta charset="utf-8"></head><body>
+                <table>
+                  <tr><th colspan="4" style="font-size: 16px; text-align: left; font-weight: bold;">LAPORAN KEUANGAN KOSTKU</th></tr>
+                  <tr><td colspan="4">Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}</td></tr>
+                  <tr></tr>
+                  <tr>
+                    <th style="border: 1px solid black; background-color: #f1f5f9; text-align: left;">Bulan</th>
+                    <th style="border: 1px solid black; background-color: #f1f5f9; text-align: right;">Pendapatan (Rp)</th>
+                    <th style="border: 1px solid black; background-color: #f1f5f9; text-align: right;">Pengeluaran (Rp)</th>
+                    <th style="border: 1px solid black; background-color: #f1f5f9; text-align: right;">Laba Bersih (Rp)</th>
+                  </tr>
+                  ${data.map(e => `
+                    <tr>
+                      <td style="border: 1px solid black; text-align: left;">${e.name}</td>
+                      <td style="border: 1px solid black; text-align: right;">${e.Pendapatan.toLocaleString('id-ID')}</td>
+                      <td style="border: 1px solid black; text-align: right;">${e.Pengeluaran.toLocaleString('id-ID')}</td>
+                      <td style="border: 1px solid black; text-align: right;">${(e.Pendapatan - e.Pengeluaran).toLocaleString('id-ID')}</td>
+                    </tr>
+                  `).join('')}
+                </table>
+              </body></html>
+            `;
+            const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel' });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "laporan_keuangan.csv");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "laporan_keuangan.xls");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
