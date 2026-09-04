@@ -14,10 +14,10 @@ class KomplainController extends Controller
     {
         if ($request->user()->role->name === 'Penghuni') {
             $penghuni_id = $request->user()->penghuni->id ?? null;
-            return response()->json(Komplain::with(['kamar', 'penghuni'])->where('penghuni_id', $penghuni_id)->orderBy('created_at', 'desc')->get());
+            return response()->json(Komplain::with(['kamar', 'penghuni.user'])->where('penghuni_id', $penghuni_id)->orderBy('created_at', 'desc')->get());
         }
 
-        return response()->json(Komplain::with(['kamar', 'penghuni'])->orderBy('created_at', 'desc')->get());
+        return response()->json(Komplain::with(['kamar', 'penghuni.user'])->orderBy('created_at', 'desc')->get());
     }
 
     public function store(Request $request)
@@ -28,8 +28,11 @@ class KomplainController extends Controller
             'foto' => 'nullable|image|max:2048',
         ]);
 
-        $validated['penghuni_id'] = $request->user()->penghuni->id;
-        $validated['kamar_id'] = $request->user()->penghuni->kamar_id;
+        $penghuni = $request->user()->penghuni;
+        $activeKontrak = $penghuni ? $penghuni->kontrakSewas()->where('status', 'Aktif')->first() : null;
+
+        $validated['penghuni_id'] = $penghuni ? $penghuni->id : null;
+        $validated['kamar_id'] = $activeKontrak ? $activeKontrak->kamar_id : null;
         $validated['status'] = 'Menunggu';
 
         if ($request->hasFile('foto')) {

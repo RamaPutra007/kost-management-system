@@ -64,7 +64,7 @@ export function KomplainList() {
   const filteredData = komplains?.filter((item: any) =>
     item.deskripsi.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.kategori.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.penghuni?.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase())
+    item.penghuni?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
   if (isLoading) return <div className="flex justify-center p-12"><Spinner className="w-10 h-10 text-primary" /></div>;
@@ -117,7 +117,7 @@ export function KomplainList() {
                       </div>
                       <p className="text-slate-800 text-base">{komplain.deskripsi}</p>
                       <div className="text-xs text-slate-500 mt-3 flex items-center gap-4">
-                        <span>Oleh: <strong className="text-slate-700">{komplain.penghuni?.nama_lengkap || 'Unknown'}</strong> (Kamar {komplain.kamar?.nomor_kamar || '-'})</span>
+                        <span>Oleh: <strong className="text-slate-700">{komplain.penghuni?.user?.name || 'Unknown'}</strong> (Kamar {komplain.kamar?.nomor_kamar || '-'})</span>
                         <span>Dibuat pada {format(new Date(komplain.created_at), 'dd MMM yyyy, HH:mm', { locale: localeID })}</span>
                       </div>
                     </div>
