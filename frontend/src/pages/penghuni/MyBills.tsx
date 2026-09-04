@@ -137,7 +137,7 @@ export function MyBills() {
                     </TableCell>
                     <TableCell className="text-right">
                       {item.status === 'Lunas' ? (
-                        <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/10" onClick={() => window.open(`/my-bills/invoice/${item.id}`, '_blank')}>Cetak Invoice</Button>
+                        <Button variant="outline" size="sm" className="text-primary border-primary hover:bg-primary/10" onClick={() => window.location.href = `/my-bills/invoice/${item.id}`}>Cetak Invoice</Button>
                       ) : item.status === 'Menunggu Verifikasi' ? (
                         <Button size="sm" variant="secondary" disabled>Menunggu</Button>
                       ) : (
