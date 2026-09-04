@@ -66,6 +66,9 @@ Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     // Fasilitas
     Route::apiResource('fasilitas', FasilitasController::class);
 
+    // Paket
+    Route::apiResource('paket', \App\Http\Controllers\PaketController::class);
+
     Route::apiResource('payment_methods', PaymentMethodController::class);
 
     // Users

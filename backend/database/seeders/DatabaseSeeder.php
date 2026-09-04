@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $roleOwner = Role::create(['name' => 'Owner']);
         $roleAdmin = Role::create(['name' => 'Admin']);
         $rolePenghuni = Role::create(['name' => 'Penghuni']);
+        $rolePenjaga = Role::create(['name' => 'Penjaga']);
 
         $owner = User::create([
             'name' => 'Owner Kost',
@@ -31,6 +32,13 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => Hash::make('password'),
             'role_id' => $roleAdmin->id,
+        ]);
+
+        $penjaga = User::create([
+            'name' => 'Penjaga Kost',
+            'email' => 'penjaga@gmail.com',
+            'password' => Hash::make('password'),
+            'role_id' => $rolePenjaga->id,
         ]);
 
         $penghuniUser = User::create([

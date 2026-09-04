@@ -26,6 +26,9 @@ import { MyComplaints } from '@/pages/penghuni/MyComplaints';
 // Unified Dashboard Entry
 import { DashboardEntry } from '@/pages/DashboardEntry';
 
+import { PaketList } from '@/pages/admin/PaketList';
+import { MyPackages } from '@/pages/penghuni/MyPackages';
+
 // New Functionality
 import { Notifications } from '@/pages/Notifications';
 import { Profil } from '@/pages/Profil';
@@ -80,6 +83,7 @@ export const router = createBrowserRouter([
           { path: '/laporan', element: <ProtectedRoute allowedRoles={['Admin', 'Owner']}><Laporan /></ProtectedRoute> },
           { path: '/pengguna', element: <ProtectedRoute allowedRoles={['Owner']}><Pengguna /></ProtectedRoute> },
           { path: '/pengaturan', element: <ProtectedRoute allowedRoles={['Owner']}><Pengaturan /></ProtectedRoute> },
+          { path: '/paket', element: <ProtectedRoute allowedRoles={['Admin', 'Owner']}><PaketList /></ProtectedRoute> },
           { path: '/pengumuman', element: <ProtectedRoute allowedRoles={['Admin', 'Owner']}><PengumumanList /></ProtectedRoute> },
           { path: '/notifikasi', element: <Notifications /> },
           { path: '/profil', element: <Profil /> },
@@ -88,9 +92,9 @@ export const router = createBrowserRouter([
           { path: '/my-room', element: <ProtectedRoute allowedRoles={['Penghuni']}><MyRoom /></ProtectedRoute> },
           { path: '/my-contract', element: <Navigate to="/my-room" replace /> },
           { path: '/my-bills', element: <ProtectedRoute allowedRoles={['Penghuni']}><MyBills /></ProtectedRoute> },
-
           { path: '/my-payments', element: <ProtectedRoute allowedRoles={['Penghuni']}><MyPayments /></ProtectedRoute> },
           { path: '/my-complaints', element: <ProtectedRoute allowedRoles={['Penghuni']}><MyComplaints /></ProtectedRoute> },
+          { path: '/my-packages', element: <ProtectedRoute allowedRoles={['Penghuni']}><MyPackages /></ProtectedRoute> },
           { path: '/my-profile', element: <ProtectedRoute allowedRoles={['Penghuni']}><Profil /></ProtectedRoute> },
           { path: '/my-notifications', element: <ProtectedRoute allowedRoles={['Penghuni']}><Notifications /></ProtectedRoute> },
         ],
